@@ -6,6 +6,7 @@ ifeq ($(TARGET),$(filter $(TARGET),\
   export PATH := $(MAKEFILE_DIR)/downloads/gcc_embedded/bin/:$(PATH)
   TARGET_ARCH := cortex-m4
   TARGET_TOOLCHAIN_PREFIX := arm-none-eabi-
+  TARGET_TOOLCHAIN_ROOT := $(TENSORFLOW_ROOT)$(MAKEFILE_DIR)/downloads/gcc_embedded/bin/
   # Download the Ambiq Apollo3 SDK and set this variable to find the header
   # files:
   APOLLO3_SDK := $(MAKEFILE_DIR)/downloads/$(AM_SDK_DEST)
@@ -75,8 +76,8 @@ $(MAKEFILE_DIR)/downloads/$(AM_SDK_DEST)/$(SF_BSPS_DEST): $(MAKEFILE_DIR)/downlo
     -Wl,--start-group -lm -lc -lgcc -Wl,--end-group \
     -fno-exceptions \
     -nostdlib --specs=nano.specs -t -lstdc++ -lc -lnosys -lm \
-    -Wl,-T,$(APOLLO3_SDK)/boards/apollo3_evb/examples/hello_world/gcc_patched/apollo3evb.ld \
-    -Wl,-Map=$(MAKEFILE_DIR)/gen/$(TARGET).map,--cref
+    -Wl,-T,$(TENSORFLOW_ROOT)$(APOLLO3_SDK)/boards/apollo3_evb/examples/hello_world/gcc_patched/apollo3evb.ld \
+    -Wl,-Map=$(TENSORFLOW_ROOT)$(MAKEFILE_DIR)/gen/$(TARGET).map,--cref
   BUILD_TYPE := micro
   ifeq ($(TARGET), apollo3evb)
     BOARD_BSP_PATH := $(APOLLO3_SDK)/boards/apollo3_evb/bsp
@@ -96,6 +97,8 @@ $(MAKEFILE_DIR)/downloads/$(AM_SDK_DEST)/$(SF_BSPS_DEST): $(MAKEFILE_DIR)/downlo
     -isystem$(MAKEFILE_DIR)/downloads/cmsis/CMSIS/DSP/Include/ \
     -I$(GCC_ARM)/arm-none-eabi/ \
     -I$(APOLLO3_SDK)/mcu/apollo3/ \
+    -I$(APOLLO3_SDK)/mcu/apollo3/regs \
+    -I$(APOLLO3_SDK)/mcu/apollo3/hal \
     -I$(APOLLO3_SDK)/CMSIS/AmbiqMicro/Include/ \
     -I$(BOARD_BSP_PATH) \
     -I$(APOLLO3_SDK)/devices/ \
@@ -118,7 +121,7 @@ $(MAKEFILE_DIR)/downloads/$(AM_SDK_DEST)/$(SF_BSPS_DEST): $(MAKEFILE_DIR)/downlo
     $(APOLLO3_SDK)/devices/am_devices_led.c
 
   CMSIS_SRC_DIR := $(MAKEFILE_DIR)/downloads/cmsis/CMSIS/DSP/Source
-  CMSIS_SRCS := \
+  THIRD_PARTY_CC_SRCS := \
   $(CMSIS_SRC_DIR)/BasicMathFunctions/arm_mult_q15.c \
   $(CMSIS_SRC_DIR)/TransformFunctions/arm_rfft_init_q15.c \
   $(CMSIS_SRC_DIR)/TransformFunctions/arm_rfft_q15.c \
@@ -131,6 +134,7 @@ $(MAKEFILE_DIR)/downloads/$(AM_SDK_DEST)/$(SF_BSPS_DEST): $(MAKEFILE_DIR)/downlo
 
   MICRO_SPEECH_TEST_SRCS += \
     $(AP3_MICRO_DIR)/_main.c
+
 
   TEST_SCRIPT := tensorflow/lite/micro/testing/test_apollo3evb_binary.sh
   # These are tests that don't currently work on the Apollo3 board.

@@ -65,16 +65,33 @@ specialize = $(call specialize_on_tags,$(1),$(strip $(call reverse,$(ALL_TAGS)))
 # 9 - Target Toolchian root directory
 # Calling eval on the output will create a <Name>_makefile target that you
 # can invoke to create the standalone project.
+
+
+#THIRD_PARTY_CC_SRCS +=  $(filter $(MAKEFILE_DIR)/downloads/%, $(MICROLITE_CC_SRCS))
+#THIRD_PARTY_CC_SRCS := $(patsubst  $(MAKEFILE_DIR)/downloads/%, third_party/%,  $(THIRD_PARTY_CC_SRCS))
+#MICROLITE_CC_SRCS := $(filter-out $(THIRD_PARTY_CC_SRCS), $(MICROLITE_CC_SRCS))
+
+
 define generate_project
 $(PRJDIR)$(3)/$(1)/%: % third_party_downloads
+	@echo 1 $$<
 	@mkdir -p $$(dir $$@)
 	@cp $$< $$@
 
 $(PRJDIR)$(3)/$(1)/third_party/%: tensorflow/lite/micro/tools/make/downloads/% third_party_downloads
+	@echo 2 $$<
 	@mkdir -p $$(dir $$@)
 	@cp $$< $$@
 
+$(PRJDIR)$(3)/$(1)/examples/%: tensorflow/lite/micro/examples/% third_party_downloads
+	@echo 3 $$<
+	@mkdir -p $$(dir $$@)
+	@cp $$< $$@
+
+
 $(PRJDIR)$(3)/$(1)/%: tensorflow/lite/micro/tools/make/templates/%.tpl
+	@echo 4
+	@echo $$(THIRD_PARTY_CC_HDRS)
 	@mkdir -p $$(dir $$@)
 	@sed -E 's#\%\{SRCS\}\%#$(4)#g' $$< | \
 	sed -E 's#\%\{EXECUTABLE\}\%#$(3)#g' | \
@@ -381,7 +398,7 @@ ifneq (,$(findstring _test,$(1)))
 endif
 $(eval $(call generate_microlite_projects,$(1),$(call specialize,$(2)),$(3)))
 endef
-
+#$(eval $(call fix_paths_for_generated_proejct))
 # Adds a dependency for a third-party library that needs to be downloaded from
 # an external source.
 # Arguments are:
@@ -411,3 +428,27 @@ endef
 # 1 - Starting path	
 # 2 - File pattern, e.g: *.h	
 recursive_find = $(wildcard $(1)$(2)) $(foreach dir,$(wildcard $(1)*),$(call recursive_find,$(dir)/,$(2)))
+
+
+define fix_paths_for_generated_proejct
+THIRD_PARTY_CC_SRCS += $(filter $(MAKEFILE_DIR)/downloads/%, $(MICROLITE_CC_SRCS))
+MICROLITE_CC_SRCS := $(filter-out $(THIRD_PARTY_CC_SRCS), $(MICROLITE_CC_SRCS))
+THIRD_PARTY_CC_SRCS := $(patsubst  $(MAKEFILE_DIR)/downloads/%, third_party/%,  $(THIRD_PARTY_CC_SRCS))
+
+GENERATED_PROJECT_INCLUDES += $(filter -I$(MAKEFILE_DIR)/downloads/%, $(INCLUDES))
+GENERATED_PROJECT_INCLUDES += $(patsubst  -I$(MAKEFILE_DIR)/downloads/%, -Ithird_party/%,  $(GENERATED_PROJECT_INCLUDES))
+GENERATED_PROJECT_INCLUDES += $(filter -isystem$(MAKEFILE_DIR)/downloads/%, $(INCLUDES))
+GENERATED_PROJECT_INCLUDES += $(patsubst  -isystem$(MAKEFILE_DIR)/downloads/%, -isystemthird_party/%,  $(GENERATED_PROJECT_INCLUDES))
+
+MICROLITE_LIBS := $(patsubst  $(MAKEFILE_DIR)/downloads/%, $(TENSORFLOW_ROOT)$(MAKEFILE_DIR)/downloads/%, $(MICROLITE_LIBS))
+LDFLAGS :=  $(patsubst  $(MAKEFILE_DIR)/downloads/%, $(TENSORFLOW_ROOT)$(MAKEFILE_DIR)/downloads/%, $(LDFLAGS))
+
+THIRD_PARTY_CC_HDRS += $(filter $(MAKEFILE_DIR)/downloads/%, $(MICROLITE_CC_HDRS))
+MICROLITE_CC_SRCS := $(filter-out $(THIRD_PARTY_CC_HDRS), $(MICROLITE_CC_SRCS))
+THIRD_PARTY_CC_HDRS := $(patsubst  $(MAKEFILE_DIR)/downloads/%, third_party/%,  $(THIRD_PARTY_CC_HDRS))
+
+#copy all third party headers that are mentioned in includes
+INCLUDE_HDRS := $(wildcard $(addsuffix /*.h,$(filter $(MAKEFILE_DIR)/downloads/%, $(patsubst -I%,%,$(INCLUDES)))))
+INCLUDE_HDRS += $(wildcard $(addsuffix /*.h,$(filter $(MAKEFILE_DIR)/downloads/%,  $(patsubst -isystem%,%,$(INCLUDES)))))
+THIRD_PARTY_CC_HDRS += $(patsubst  $(MAKEFILE_DIR)/downloads/%, third_party/%,  $(INCLUDE_HDRS))
+endef

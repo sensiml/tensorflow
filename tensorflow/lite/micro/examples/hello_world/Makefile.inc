@@ -37,6 +37,30 @@ $(HELLO_WORLD_TEST_SRCS),$(HELLO_WORLD_TEST_HDRS)))
 $(eval $(call microlite_test,output_handler_test,\
 $(OUTPUT_HANDLER_TEST_SRCS),$(OUTPUT_HANDLER_TEST_HDRS)))
 
+
+
+THIRD_PARTY_CC_SRCS += $(filter $(MAKEFILE_DIR)/downloads/%, $(MICROLITE_CC_SRCS))
+MICROLITE_CC_SRCS := $(filter-out $(THIRD_PARTY_CC_SRCS), $(MICROLITE_CC_SRCS))
+THIRD_PARTY_CC_SRCS := $(patsubst  $(MAKEFILE_DIR)/downloads/%, third_party/%,  $(THIRD_PARTY_CC_SRCS))
+
+GENERATED_PROJECT_INCLUDES += $(filter -I$(MAKEFILE_DIR)/downloads/%, $(INCLUDES))
+GENERATED_PROJECT_INCLUDES += $(patsubst  -I$(MAKEFILE_DIR)/downloads/%, -Ithird_party/%,  $(GENERATED_PROJECT_INCLUDES))
+GENERATED_PROJECT_INCLUDES += $(filter -isystem$(MAKEFILE_DIR)/downloads/%, $(INCLUDES))
+GENERATED_PROJECT_INCLUDES += $(patsubst  -isystem$(MAKEFILE_DIR)/downloads/%, -isystemthird_party/%,  $(GENERATED_PROJECT_INCLUDES))
+
+MICROLITE_LIBS := $(patsubst  $(MAKEFILE_DIR)/downloads/%, $(TENSORFLOW_ROOT)$(MAKEFILE_DIR)/downloads/%, $(MICROLITE_LIBS))
+LDFLAGS :=  $(patsubst  $(MAKEFILE_DIR)/downloads/%, $(TENSORFLOW_ROOT)$(MAKEFILE_DIR)/downloads/%, $(LDFLAGS))
+
+THIRD_PARTY_CC_HDRS += $(filter $(MAKEFILE_DIR)/downloads/%, $(MICROLITE_CC_HDRS))
+MICROLITE_CC_SRCS := $(filter-out $(THIRD_PARTY_CC_HDRS), $(MICROLITE_CC_SRCS))
+THIRD_PARTY_CC_HDRS := $(patsubst  $(MAKEFILE_DIR)/downloads/%, third_party/%,  $(THIRD_PARTY_CC_HDRS))
+
+#copy all third party headers that are mentioned in includes
+INCLUDE_HDRS := $(wildcard $(addsuffix /*.h,$(filter $(MAKEFILE_DIR)/downloads/%, $(patsubst -I%,%,$(INCLUDES)))))
+INCLUDE_HDRS += $(wildcard $(addsuffix /*.h,$(filter $(MAKEFILE_DIR)/downloads/%,  $(patsubst -isystem%,%,$(INCLUDES)))))
+THIRD_PARTY_CC_HDRS += $(patsubst  $(MAKEFILE_DIR)/downloads/%, third_party/%,  $(INCLUDE_HDRS))
+
+
 # Builds a standalone binary.
 $(eval $(call microlite_test,hello_world,\
 $(HELLO_WORLD_SRCS),$(HELLO_WORLD_HDRS)))
