@@ -16,7 +16,7 @@ TfLiteTensor* input = nullptr;
 TfLiteTensor* output = nullptr;
 }  // namespace
 
-void tf_micro_model_setup(const void* model_data, uint8_t* tensor_arena,
+int tf_micro_model_setup(const void* model_data, uint8_t* tensor_arena,
                           int kTensorArenaSize) {
   // Set up logging. Google style is to avoid globals or statics because of
   // lifetime uncertainty, but since this has a trivial destructor it's okay.
@@ -32,8 +32,9 @@ void tf_micro_model_setup(const void* model_data, uint8_t* tensor_arena,
         "Model provided is schema version %d not equal "
         "to supported version %d.",
         model->version(), TFLITE_SCHEMA_VERSION);
-    return;
+    return version_unspported;
   }
+
 
 //FILL_MICRO_MUTABLE_OPS_RESOLVER
 
@@ -45,15 +46,17 @@ void tf_micro_model_setup(const void* model_data, uint8_t* tensor_arena,
   TfLiteStatus allocate_status = interpreter->AllocateTensors();
   if (allocate_status != kTfLiteOk) {
     error_reporter->Report("AllocateTensors() failed");
-    return;
+    return allocate_failed;
   }
 
   // Obtain pointers to the model's input and output tensors.
   input = interpreter->input(0);
   output = interpreter->output(0);
+
+  return success;
 }
 
-void tf_micro_model_invoke(float* input_data, int num_inputs, float* results,
+int tf_micro_model_invoke(float* input_data, int num_inputs, float* results,
                            int num_outputs) {
   int i;
 
@@ -65,11 +68,13 @@ void tf_micro_model_invoke(float* input_data, int num_inputs, float* results,
   TfLiteStatus invoke_status = interpreter->Invoke();
   if (invoke_status != kTfLiteOk) {
     error_reporter->Report("Invoke failed");
-    return;
+    return invoke_failed;
   }
 
   // Read the predicted y value from the model's output tensor
   for (i = 0; i < num_outputs; i++) {
     results[i] = output->data.f[i];
   }
+
+  return success;
 }

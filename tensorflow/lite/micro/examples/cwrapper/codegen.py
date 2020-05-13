@@ -237,12 +237,12 @@ def fill_test_data(
     outputs.append("#define MODEL_INPUTS {}".format(num_inputs))
     outputs.append("#define MODEL_OUTPUTS {}".format(num_outputs))
     outputs.append("#define TEST_DATA_LENGTH".format(len(test_data)))
-    outputs.append("float results[MODEL_OUTPUTS] ={{ {} }}".format(', '.join(["0" for _ in range(num_inputs)])))
+    outputs.append("float results[MODEL_OUTPUTS] ={{ {} }};".format(', '.join(["0" for _ in range(num_outputs)])))
 
     outputs.append("const float testdata[TEST_DATA_LENGTH][MODEL_INPUTS] = {")
     
     for i in range(len(test_data)):
-        outputs.append('{{ {} }},'.format(','.join([str(x) for x in test_data[i]])))
+        outputs.append('{{ {} }},'.format('.0f,'.join([str(x) for x in test_data[i]])))
 
     outputs.append('};')
 
@@ -256,15 +256,17 @@ if __name__ == "__main__":
     import sys
 
     print(sys.argv[1])
-    
-    if sys.argv <= 1:
+
+    if len(sys.argv) <= 1:
         fill_micro_api_template_file()
-        return
+    
+    else:
 
-    params = json.load(open(sys.argv[1],'r'))    
+        params = json.load(open(sys.argv[1],'r'))    
 
-    print(fill_micro_api_template_file(params['model_binary']))
+        print(fill_micro_api_template_file(params['model_binary']))
 
-    print(fill_model_template_file(params['model_binary']))
+        print(fill_model_template_file(params['model_binary']))
 
-    print(fill_test_data(params['test_data']))
+        print(fill_test_data(params['test_data']))
+

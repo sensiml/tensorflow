@@ -37,7 +37,7 @@ static int test_invoke(char* tflite_buffer, size_t arena_size,
     return ret;
   }
 
-  ret = tf_micro_model_invoke(input_data, num_inputs, results, num_outputs)
+  ret = tf_micro_model_invoke(input_data, num_inputs, results, num_outputs);
 
       free(tensor_arena);
 
