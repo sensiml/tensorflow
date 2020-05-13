@@ -256,6 +256,11 @@ if __name__ == "__main__":
     import sys
 
     print(sys.argv[1])
+    
+    if sys.argv <= 1:
+        fill_micro_api_template_file()
+        return
+
     params = json.load(open(sys.argv[1],'r'))    
 
     print(fill_micro_api_template_file(params['model_binary']))
