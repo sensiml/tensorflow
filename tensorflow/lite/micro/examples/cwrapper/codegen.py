@@ -152,7 +152,7 @@ def gen_micro_mutable_ops_resolver_add(model, all_ops_path):
     return gen_model_functions(used_functions, micro_function_code)
 
 
-def fill_template_file(
+def fill_micro_api_template_file(
     model=None,
     template_path="./micro_api.cc.tpl",
     output="./micro_api.cc",
@@ -190,6 +190,30 @@ def fill_template_file(
     return default_template
 
 
+def fill_model_template_file(
+    model,
+    template_path="./model.cc.tpl",
+    output="./model.cc",
+):
+    template = {'MODEL':model,
+                'MODEL_LENGTH':len(model)}
+
+    with open(template_path, "r") as fid:
+        output_str = "".join(fid.readlines())
+        for key, value in template.items():
+            output_str = re.sub(
+                r"//FILL_{}\b".format(key.upper()), "\n".join(value), output_str,
+            )
+
+    with open(output, "w") as out:
+        out.write(output_str)
+
+    return template
+
+def fill_test_data(test_data,
+                   template_path='./test_data.h.tpl',
+                   output='./test_data.h')
+
 if __name__ == "__main__":
 
     import argparse
@@ -222,4 +246,8 @@ if __name__ == "__main__":
             args.model_name,
         )
 
-    print(fill_template_file(model_binary))
+    print(fill_micro_api_template_file(model_binary))
+
+    print(fill_model_template_file(model_binary))
+
+    print(fill_test_data(test_data))
