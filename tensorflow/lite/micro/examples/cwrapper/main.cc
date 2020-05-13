@@ -10,6 +10,8 @@ int main(int argc, char** argv) {
 
   ret = find_arena_size(g_model, arena_size_p, 2 * 1024, 128 * 1024);
 
+  arena_size+=1024;
+
   if (ret == success) {
     printf("arena_size is %d\n", arena_size);
   }
@@ -26,12 +28,20 @@ int main(int argc, char** argv) {
     printf("malloc failed.\n");
   }
 
+
+  uint8_t* tensor_arena = (uint8_t*)malloc(arena_size);
+
+  if (!tensor_arena) {
+    return malloc_failed;
+  }
+
+  printf("TEST INVOKE\n");
   for (int index = 0; index < TEST_DATA_LENGTH; index++) {
     for (i = 0; i < MODEL_OUTPUTS; i++) {
       results[i] = 0.0;
     }
 
-    ret = test_invoke(g_model, arena_size, test_data[index], MODEL_INPUTS,
+    ret = test_invoke(g_model, tensor_arena, arena_size, test_data[index], MODEL_INPUTS,
                       results, MODEL_OUTPUTS);
 
     if (ret == success) {
@@ -43,4 +53,7 @@ int main(int argc, char** argv) {
       printf("\n");
     }
   }
+
+  free(tensor_arena);
+
 }
