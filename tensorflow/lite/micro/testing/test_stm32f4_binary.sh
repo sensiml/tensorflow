@@ -36,6 +36,10 @@ docker build -t renode_stm32f4 \
 
 exit_code=0
 # running in `if` to avoid setting +e
+echo ${ROOT_DIR}
+echo $1
+echo $2
+echo "RUNNING DOCER"
 if ! docker run \
   --log-driver=none -a stdout -a stderr \
   -v ${ROOT_DIR}:/workspace \
