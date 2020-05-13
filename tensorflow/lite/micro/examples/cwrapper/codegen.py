@@ -236,10 +236,10 @@ def fill_test_data(
     outputs = []
     outputs.append("#define MODEL_INPUTS {}".format(num_inputs))
     outputs.append("#define MODEL_OUTPUTS {}".format(num_outputs))
-    outputs.append("#define TEST_DATA_LENGTH".format(len(test_data)))
+    outputs.append("#define TEST_DATA_LENGTH {}".format(len(test_data)))
     outputs.append("float results[MODEL_OUTPUTS] ={{ {} }};".format(', '.join(["0" for _ in range(num_outputs)])))
 
-    outputs.append("const float testdata[TEST_DATA_LENGTH][MODEL_INPUTS] = {")
+    outputs.append("float test_data[TEST_DATA_LENGTH][MODEL_INPUTS] = {")
     
     for i in range(len(test_data)):
         outputs.append('{{ {} }},'.format('.0f,'.join([str(x) for x in test_data[i]])))

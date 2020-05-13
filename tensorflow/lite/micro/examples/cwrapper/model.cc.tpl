@@ -36,9 +36,9 @@ limitations under the License.
 #define DATA_ALIGN_ATTRIBUTE
 #endif
 
-//const unsigned char g_model[] DATA_ALIGN_ATTRIBUTE = {};
-//const int g_model_len = 0
+//const unsigned char g_model[] DATA_ALIGN_ATTRIBUTE = {...};
+//const int g_model_len = X;
 
-//FILL_MODEL
 //FILL_MODEL_LENGTH
+//FILL_MODEL
 
