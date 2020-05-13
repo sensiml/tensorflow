@@ -2,7 +2,7 @@ import os
 import re
 import tensorflow as tf
 import binascii
-
+import json
 
 def parse_model_file(path, variable_name):
     """ this will parse the hex string form a model file model_data[] = {0x18, 0x00, ....} given
@@ -190,19 +190,34 @@ def fill_micro_api_template_file(
     return default_template
 
 
+def to_c_hex(tflite_model):
+    hex_str = binascii.hexlify(tflite_model).decode()
+    return (
+        "".join(
+            ["0x{}, ".format(hex_str[i : i + 2]) for i in range(0, len(hex_str), 2)]
+        )[:-2],
+        len(hex_str) // 2,
+    )
+
 def fill_model_template_file(
     model,
     template_path="./model.cc.tpl",
     output="./model.cc",
-):
-    template = {'MODEL':model,
-                'MODEL_LENGTH':len(model)}
+    ):
 
+    print(type(model))
+    
+    model_str, model_length = to_c_hex(binascii.unhexlify(model))
+    template = {'MODEL':"const unsigned char g_model[] DATA_ALIGN_ATTRIBUTE = {{{0}}};".format(model_str),
+                'MODEL_LENGTH':"const int g_model_len = {};".format(model_length)}
+
+    print(template)
     with open(template_path, "r") as fid:
         output_str = "".join(fid.readlines())
         for key, value in template.items():
+            print(value)
             output_str = re.sub(
-                r"//FILL_{}\b".format(key.upper()), "\n".join(value), output_str,
+                r"//FILL_{}\b".format(key.upper()), value, output_str,
             )
 
     with open(output, "w") as out:
@@ -210,19 +225,26 @@ def fill_model_template_file(
 
     return template
 
-def fill_test_data(test_data,
-                   template_path='./test_data.h.tpl',
-                   output='./test_data.h')
-
+def fill_test_data(
+    test_data,
+    template_path='./test_data.h.tpl',
+    output='./test_data.h',
+    ):
+    
+    num_inputs = len(test_data[0])
+    num_outputs= 5
     outputs = []
-    outputs.append("#define MODEL_INPUTS {}".format(num_inputs)))
+    outputs.append("#define MODEL_INPUTS {}".format(num_inputs))
     outputs.append("#define MODEL_OUTPUTS {}".format(num_outputs))
     outputs.append("#define TEST_DATA_LENGTH".format(len(test_data)))
-    outputs.append("float results[MODEL_OUTPUTS] ={{{0}}}".format(', '.join([0 for _ in range(num_inputs)])))
-    outputs.append("const short testdata[TEST_DATA_LENGTH][MODEL_INPUTS] = {")
+    outputs.append("float results[MODEL_OUTPUTS] ={{ {} }}".format(', '.join(["0" for _ in range(num_inputs)])))
+
+    outputs.append("const float testdata[TEST_DATA_LENGTH][MODEL_INPUTS] = {")
     
     for i in range(len(test_data)):
-        outputs.append('{{ {} }},\n'.format(','.join(test_data[i])))
+        outputs.append('{{ {} }},'.format(','.join([str(x) for x in test_data[i]])))
+
+    outputs.append('};')
 
     with open(output, 'w') as out:
         out.write('\n'.join(outputs))
@@ -233,7 +255,8 @@ if __name__ == "__main__":
 
     import sys
 
-    params = json.loads(open(sys.argv[1],'r'))    
+    print(sys.argv[1])
+    params = json.load(open(sys.argv[1],'r'))    
 
     print(fill_micro_api_template_file(params['model_binary']))
 
