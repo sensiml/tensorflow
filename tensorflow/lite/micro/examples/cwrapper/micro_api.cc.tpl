@@ -17,7 +17,7 @@ TfLiteTensor* output = nullptr;
 }  // namespace
 
 int tf_micro_model_setup(const void* model_data, uint8_t* tensor_arena,
-                          int kTensorArenaSize) {
+                          int kTensorArenaSize, bool set_static) {
   // Set up logging. Google style is to avoid globals or statics because of
   // lifetime uncertainty, but since this has a trivial destructor it's okay.
   // NOLINTNEXTLINE(runtime-global-variables)
@@ -38,9 +38,19 @@ int tf_micro_model_setup(const void* model_data, uint8_t* tensor_arena,
 
 //FILL_MICRO_MUTABLE_OPS_RESOLVER
 
+  if (set_static)
+  {
   static tflite::MicroInterpreter static_interpreter(
       model, resolver, tensor_arena, kTensorArenaSize, error_reporter);
   interpreter = &static_interpreter;
+  }
+  else
+  {
+    /* code */
+    tflite::MicroInterpreter tmp_interpreter(
+        model, resolver, tensor_arena, kTensorArenaSize, error_reporter);
+    interpreter = &tmp_interpreter;
+  }
 
   // Allocate memory from the tensor_arena for the model's tensors.
   TfLiteStatus allocate_status = interpreter->AllocateTensors();
