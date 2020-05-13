@@ -214,40 +214,29 @@ def fill_test_data(test_data,
                    template_path='./test_data.h.tpl',
                    output='./test_data.h')
 
+    outputs = []
+    outputs.append("#define MODEL_INPUTS {}".format(num_inputs)))
+    outputs.append("#define MODEL_OUTPUTS {}".format(num_outputs))
+    outputs.append("#define TEST_DATA_LENGTH".format(len(test_data)))
+    outputs.append("float results[MODEL_OUTPUTS] ={{{0}}}".format(', '.join([0 for _ in range(num_inputs)])))
+    outputs.append("const short testdata[TEST_DATA_LENGTH][MODEL_INPUTS] = {")
+    
+    for i in range(len(test_data)):
+        outputs.append('{{ {} }},\n'.format(','.join(test_data[i])))
+
+    with open(output, 'w') as out:
+        out.write('\n'.join(outputs))
+
+    return '\n'.join(outputs)
+
 if __name__ == "__main__":
 
-    import argparse
     import sys
 
-    parser = argparse.ArgumentParser(description='Generate micro_api.cc with necessary functions to run a model.')
+    params = json.loads(open(sys.argv[1],'r'))    
 
-    parser.add_argument('--model_file', type=str, help='path to model file to use')
-    parser.add_argument('--model_name', help='name of the variable holding the model data')                    
-    parser.add_argument('--model_binary', type=str, help='model binary string to use')
+    print(fill_micro_api_template_file(params['model_binary']))
 
-    args = parser.parse_args()
+    print(fill_model_template_file(params['model_binary']))
 
-    if not len(sys.argv) > 1:
-        # Use all ops
-        model_binary = None
-    
-    elif args.model_binary:
-        model_binary = args.model_binary
-
-    elif (args.model_file or args.model_name):
-        if args.model_file and not args.model_name:
-            raise Exception("Model name was not supplied.")
-
-        if args.model_name and not args.model_file:
-            raise Exception("Model File was not supplied.")
-        
-        model_binary = parse_model_file(
-            args.model_file,
-            args.model_name,
-        )
-
-    print(fill_micro_api_template_file(model_binary))
-
-    print(fill_model_template_file(model_binary))
-
-    print(fill_test_data(test_data))
+    print(fill_test_data(params['test_data']))
