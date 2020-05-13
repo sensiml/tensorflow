@@ -16,13 +16,16 @@
 using sysbus
 
 mach create
+
+logFile @/workspace/tensorflow/lite/micro/testing/logs/renode_stm32f4_log.txt
+
 machine LoadPlatformDescription @platforms/cpus/stm32f4.repl
 
 # These lines are needed to show the results of DebugLog calls in the output.
 machine LoadPlatformDescriptionFromString "uartSemihosting: UART.SemihostingUart @ cpu"
 showAnalyzer cpu.uartSemihosting Antmicro.Renode.Analyzers.LoggingUartAnalyzer
+sysbus.cpu LogFunctionNames True
 
-logFile @/tmp/renode_stm32f4_log.txt
 
 macro reset
 """

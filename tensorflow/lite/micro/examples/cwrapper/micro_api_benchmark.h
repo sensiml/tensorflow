@@ -24,18 +24,19 @@ static int test_allocate(const unsigned char* tflite_buffer, int arena_size) {
 static int test_invoke(const unsigned char* tflite_buffer, uint8_t* tensor_arena,  int arena_size,
                        float* input_data, int num_inputs, float* results,
                        int num_outputs) {
-  int ret;
+  int ret = success;
 
 
   if (set_static == false)
+  {
     ret = tf_micro_model_setup(tflite_buffer, tensor_arena, arena_size, true);
 
     set_static=true;
     
     if (ret != success) {
-      printf("MODEL FAILED TO BE SET UP %d\n", ret);
       return ret;
     }
+  }
 
   ret = tf_micro_model_invoke(input_data, num_inputs, results, num_outputs);
 

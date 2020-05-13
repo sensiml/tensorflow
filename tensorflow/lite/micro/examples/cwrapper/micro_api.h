@@ -7,6 +7,8 @@
 extern "C" {
 #endif
 
+int __exidx_start(){ return -1;} //some library wants these set, note sure what, exceptions should be disabled. https://forum.pjrc.com/threads/57192-Teensy-4-0-linker-issues-with-STL-libraries
+int __exidx_end(){ return -1; }
 
 
 typedef enum {success, version_unspported, allocate_failed, invoke_failed, malloc_failed} MICRO_ERRORS;
