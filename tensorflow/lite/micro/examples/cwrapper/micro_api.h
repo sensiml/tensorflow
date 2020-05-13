@@ -7,10 +7,13 @@
 extern "C" {
 #endif
 
+typedef enum {success, version_unspported, allocate_failed, invoke_failed, malloc_failed} MICRO_ERRORS;
 
 void tf_micro_model_setup(const void * model_data, unsigned char * tensor_arena, int kTensorArenaSize);
 
 void tf_micro_model_invoke(float* input_data, int num_inputs, float* results, int num_outputs);
+
+
 
 
 #ifdef __cplusplus
