@@ -2,8 +2,6 @@
 #include "tensorflow/lite/micro/examples/cwrapper/model.h"
 #include "tensorflow/lite/micro/examples/cwrapper/test_data.h"
 
-int __exidx_start(){ return -1;} //some library wants these set, note sure what, exceptions should be disabled. https://forum.pjrc.com/threads/57192-Teensy-4-0-linker-issues-with-STL-libraries
-int __exidx_end(){ return -1; }
 
 int main(int argc, char** argv) {
   int arena_size = 128 * 1024;
