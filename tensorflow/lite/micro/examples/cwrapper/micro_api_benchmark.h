@@ -5,7 +5,7 @@
 #include "tensorflow/lite/micro/examples/cwrapper/micro_api.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 
-static int test_allocate(char* tflite_buffer, size_t arena_size) {
+static int test_allocate(const unsigned char* tflite_buffer, size_t arena_size) {
   int ret;
 
   uint8_t* tensor_arena = (uint8_t*)malloc(arena_size);
@@ -20,7 +20,7 @@ static int test_allocate(char* tflite_buffer, size_t arena_size) {
   return ret;
 }
 
-static int test_invoke(char* tflite_buffer, size_t arena_size,
+static int test_invoke(const unsigned char* tflite_buffer, size_t arena_size,
                        float* input_data, int num_inputs, float* results,
                        int num_outputs) {
   int ret;
@@ -44,7 +44,7 @@ static int test_invoke(char* tflite_buffer, size_t arena_size,
   return ret;
 }
 
-static int find_arena_size(char* tflite_buffer, int* arena_size, size_t a_low,
+static int find_arena_size(const unsigned char* tflite_buffer, int* arena_size, size_t a_low,
                            size_t a_high) {
   size_t low = a_low;
   size_t high = a_high;

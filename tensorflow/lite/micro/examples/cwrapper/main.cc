@@ -8,12 +8,7 @@ int main(int argc, char** argv) {
   int ret;
   int i;
 
-  if (argc != 2) {
-    printf("Requires one parameter (a path to a tflite file)\n");
-    return 1;
-  }
-
-  ret = find_arena_size(tflite_buffer, arena_size_p, 2 * 1024, 128 * 1024);
+  ret = find_arena_size(g_model, arena_size_p, 2 * 1024, 128 * 1024);
 
   if (ret == success) {
     printf("arena_size is %d\n", arena_size);
@@ -31,19 +26,19 @@ int main(int argc, char** argv) {
     printf("malloc failed.\n");
   }
 
-  for (int index = 0; index < test_data_len; index++) {
+  for (int index = 0; index < TEST_DATA_LENGTH; index++) {
     for (i = 0; i < MODEL_OUTPUTS; i++) {
-      result[i] = 0.0;
+      results[i] = 0.0;
     }
 
-    ret = test_invoke(tflite_buffer, arena_size, test_data[index], num_inputs,
-                      test_result, num_outputs);
+    ret = test_invoke(g_model, arena_size, test_data[index], MODEL_INPUTS,
+                      results, MODEL_OUTPUTS);
 
     if (ret == success) {
       printf("Test Vector %d result: ", index);
       for (i = 0; i < MODEL_OUTPUTS; i++) {
-        printf("%f, ", test_result[i]);
-        test_result[i] = 0.0;
+        printf("%f, ", results[i]);
+        results[i] = 0.0;
       }
       printf("\n");
     }
