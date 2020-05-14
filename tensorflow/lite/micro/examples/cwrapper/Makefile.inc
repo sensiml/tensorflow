@@ -13,11 +13,15 @@ TENSORFLOW_CWRAPPER_TEST_HDRS := tensorflow/lite/micro/examples/cwrapper/micro_a
 					   tensorflow/lite/micro/examples/cwrapper/test_data.h
 
 
+
+
 # Builds a standalone library.
-$(eval $(call microlite_test,cwrapper,\
+$(eval $(call microlite_test,cwrapper_lib,\
 $(TENSORFLOW_LIB_SRCS),$(TENSORFLOW_LIB_HDRS)))
 
 
+$(eval $(call generate_project_third_party_parsing))
+
 # Builds a standalone library.
-$(eval $(call microlite_test,cwrapper_test,\
+$(eval $(call microlite_test,cwrapper,\
 $(TENSORFLOW_CWRAPPER_TEST_SRCS),$(TENSORFLOW_CWRAPPER_TEST_HDRS)))
