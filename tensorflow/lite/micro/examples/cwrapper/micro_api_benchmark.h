@@ -44,7 +44,9 @@ static int test_invoke(const unsigned char* tflite_buffer, uint8_t* tensor_arena
 }
 
 static int find_arena_size(const unsigned char* tflite_buffer, int* arena_size_p, size_t a_low,
-                           size_t a_high) {
+                           size_t a_high, size_t delta) {
+
+
   int low = a_low;
   int high = a_high;
   int curr = low + ((high - low) / 2);
@@ -62,17 +64,17 @@ static int find_arena_size(const unsigned char* tflite_buffer, int* arena_size_p
 
     if (r == allocate_failed) {  // too low
       low = curr;
-      curr = low + ((high - low) / 2);
+      curr = low + ((high - low) /2);
     } else {
       high = curr;
-      curr = low + ((high - low) / 2);
+      curr = high - ((high - low) /2);
     }
 
-    if (low == curr || high == curr) {
+    if (low == curr || high == curr || (high - low) < delta) {
       break;
     }
 
-    if (last_success == a_high || steps >= 99) {
+    if (last_success >= a_high || steps >= 99 ) {
       return allocate_failed;
     }
 

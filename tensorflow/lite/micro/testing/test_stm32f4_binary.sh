@@ -51,8 +51,6 @@ then
   exit_code=1
 fi
 
-echo "LOGS:"
-cat ${MICRO_LOG_FILENAME}
 if [ $exit_code -eq 0 ]
 then
   echo "$1: PASS"
