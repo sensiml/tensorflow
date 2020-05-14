@@ -12,7 +12,6 @@ int __exidx_start(){return -1;}; //some library wants these set, note sure what,
 int __exidx_end(){return -1;};
 }
 
-static bool set_static = false;
 
 //adapted from https://github.com/edgeimpulse/tflite-find-arena-size
 static int find_arena_size(const unsigned char* tflite_buffer, uint8_t * tensor_arena, int* arena_size_p, size_t a_low,
@@ -28,7 +27,7 @@ static int find_arena_size(const unsigned char* tflite_buffer, uint8_t * tensor_
 
   while (steps < 100) {
     ++steps;
-    ret = tf_micro_model_setup(tflite_buffer, tensor_arena, curr, set_static);
+    ret = tf_micro_model_setup(tflite_buffer, tensor_arena, curr, false);
     printf("%d %d %d\n", ret, last_success, curr);
 
     if (ret == success) {
@@ -57,6 +56,7 @@ static int find_arena_size(const unsigned char* tflite_buffer, uint8_t * tensor_
 
   return success;
 }
+
 
 
 #endif  // TENSORFLOW_LITE_MICRO_API_BENCHMARK_H_
