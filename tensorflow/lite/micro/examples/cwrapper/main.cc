@@ -3,15 +3,17 @@
 #include "tensorflow/lite/micro/examples/cwrapper/test_data.h"
 
 
+
 int main(int argc, char** argv) {
   int arena_size = 128 * 1024;
   int* arena_size_p = &arena_size;
   int ret;
+  int delta = 1024;
   int i;
 
-  ret = find_arena_size(g_model, arena_size_p, 2 * 1024, 128 * 1024);
+  ret = find_arena_size(g_model, arena_size_p, 2 * 1024, 32 * 1024, delta);
 
-  arena_size+=1024;
+  arena_size+=delta/2;
 
   if (ret == success) {
     printf("arena_size is %d\n", arena_size);
