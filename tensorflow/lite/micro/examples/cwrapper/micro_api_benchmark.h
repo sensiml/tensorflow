@@ -12,22 +12,7 @@ int __exidx_start(){return -1;}; //some library wants these set, note sure what,
 int __exidx_end(){return -1;};
 }
 
-
-static bool set_static=false;
-static int test_allocate(const unsigned char* tflite_buffer, int arena_size) {
-  int ret;
-
-  uint8_t* tensor_arena = (uint8_t*)malloc(arena_size);
-  if (!tensor_arena) {
-    return malloc_failed;
-  }
-
-  ret = tf_micro_model_setup(tflite_buffer, tensor_arena, arena_size, set_static);
-
-  free(tensor_arena);
-
-  return ret;
-}
+static bool set_static = false;
 
 static int test_invoke(const unsigned char* tflite_buffer, uint8_t* tensor_arena,  int arena_size,
                        float* input_data, int num_inputs, float* results,
@@ -63,7 +48,8 @@ static int find_arena_size(const unsigned char* tflite_buffer, int* arena_size_p
 
   while (steps < 100) {
     ++steps;
-    int r = test_allocate(tflite_buffer, curr);
+
+    int r =   ret = tf_micro_model_setup(tflite_buffer, tensor_arena, curr, set_static);
     //printf("%d %d %d\n", r, last_success, curr);
 
     if (r == success) {

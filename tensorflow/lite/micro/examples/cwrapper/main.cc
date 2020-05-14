@@ -2,39 +2,36 @@
 #include "tensorflow/lite/micro/examples/cwrapper/model.h"
 #include "tensorflow/lite/micro/examples/cwrapper/test_data.h"
 
+#define MAX_TENSOR_ARENA_SIZE = 32 * 1024
+#define MIN_TENSOR_ARENA_SIZE = 2 * 1024
+#define ARENA_TOLERANCE = 1024
+
+uint8_t tensor_arena[MAX_TENSOR_ARENA_SIZE];
 
 int main(int argc, char** argv) {
-  int arena_size = 128 * 1024;
+  int arena_size = MAX_TENSOR_ARENA_SIZE;
   int* arena_size_p = &arena_size;
   int ret;
-  int delta = 1024;
   int i;
 
-  ret = find_arena_size(g_model, arena_size_p, 2 * 1024, 32 * 1024, delta);
-
-  arena_size+=delta/2;
+  ret = find_arena_size(g_model, tensor_arena, arena_size_p,
+                        MIN_TENSOR_ARENA_SIZE, MAX_TENSOR_ARENA_SIZE,
+                        ARENA_TOLERANCE);
 
   if (ret == success) {
     printf("arena_size is %d\n", arena_size);
   }
 
   else if (ret == version_unspported) {
-   printf("unuported version.\n");
+    printf("unuported version.\n");
   }
 
   else if (ret == allocate_failed) {
-   printf("allocation failed.\n");
+    printf("allocation failed.\n");
   }
 
   else if (ret == malloc_failed) {
-   printf("malloc failed.\n");
-  }
-
-
-  uint8_t* tensor_arena = (uint8_t*)malloc(arena_size);
-
-  if (!tensor_arena) {
-    return malloc_failed;
+    printf("malloc failed.\n");
   }
 
   printf("TEST INVOKE\n");
@@ -43,19 +40,18 @@ int main(int argc, char** argv) {
       results[i] = 0.0;
     }
 
-    ret = test_invoke(g_model, tensor_arena, arena_size, test_data[index], MODEL_INPUTS,
-                      results, MODEL_OUTPUTS);
+    ret = test_invoke(g_model, tensor_arena, arena_size, test_data[index],
+                      MODEL_INPUTS, results, MODEL_OUTPUTS);
 
     if (ret == success) {
       printf("Test Vector %d result: ", index);
       for (i = 0; i < MODEL_OUTPUTS; i++) {
-       printf("%f, ", results[i]);
+        printf("%f, ", results[i]);
         results[i] = 0.0;
       }
-     printf("\n");
+      printf("\n");
     }
   }
 
   free(tensor_arena);
-
 }
