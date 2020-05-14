@@ -56,7 +56,7 @@ static int find_arena_size(const unsigned char* tflite_buffer, int* arena_size_p
   while (steps < 100) {
     ++steps;
     int r = test_allocate(tflite_buffer, curr);
-    printf("%d %d %d\n", r, last_success, curr);
+    //printf("%d %d %d\n", r, last_success, curr);
 
     if (r == success) {
       last_success = curr;
