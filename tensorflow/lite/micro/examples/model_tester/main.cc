@@ -32,7 +32,6 @@ int main(int argc, char** argv) {
     printf("malloc failed.\n");
   }
 
-
   ret = tf_micro_model_setup(g_model, tensor_arena, arena_size, true);
 
   if (ret == success) 
