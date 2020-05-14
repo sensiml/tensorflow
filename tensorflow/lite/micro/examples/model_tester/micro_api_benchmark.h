@@ -2,7 +2,7 @@
 #ifndef TENSORFLOW_LITE_MICRO_API_BENCHMARK_H_
 #define TENSORFLOW_LITE_MICRO_API_BENCHMARK_H_
 
-#include "tensorflow/lite/micro/examples/cwrapper/micro_api.h"
+#include "tensorflow/lite/micro/examples/model_tester/micro_api.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 
 

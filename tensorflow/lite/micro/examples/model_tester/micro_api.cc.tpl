@@ -1,4 +1,4 @@
-#include "tensorflow/lite/micro/examples/cwrapper/micro_api.h"
+#include "tensorflow/lite/micro/examples/model_tester/micro_api.h"
 #include "tensorflow/lite/micro/kernels/micro_ops.h"
 #include "tensorflow/lite/micro/micro_error_reporter.h"
 #include "tensorflow/lite/micro/micro_interpreter.h"

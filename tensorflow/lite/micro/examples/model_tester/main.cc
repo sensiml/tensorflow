@@ -1,6 +1,6 @@
-#include "tensorflow/lite/micro/examples/cwrapper/micro_api_benchmark.h"
-#include "tensorflow/lite/micro/examples/cwrapper/model.h"
-#include "tensorflow/lite/micro/examples/cwrapper/test_data.h"
+#include "tensorflow/lite/micro/examples/model_tester/micro_api_benchmark.h"
+#include "tensorflow/lite/micro/examples/model_tester/model.h"
+#include "tensorflow/lite/micro/examples/model_tester/test_data.h"
 
 #define MAX_TENSOR_ARENA_SIZE 10 * 1024
 #define MIN_TENSOR_ARENA_SIZE 2 * 1024
