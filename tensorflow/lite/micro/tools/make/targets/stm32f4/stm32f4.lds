@@ -30,10 +30,10 @@ limitations under the License.
 /* Define main entry point */
 ENTRY(_main)
 
-/* 192K of RAM and 1024 of FLASH */
+/* 32K of RAM and 256K of FLASH */
 MEMORY {
 RAM (xrw) : ORIGIN = 0x20000000, LENGTH = 32K
-FLASH (rx) : ORIGIN = 0x8000000, LENGTH = 246K
+FLASH (rx) : ORIGIN = 0x8000000, LENGTH = 256K
 }
 
 /* Compute where the stack ends rather than hard coding it */
