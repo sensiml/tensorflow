@@ -2,7 +2,7 @@
 #include "tensorflow/lite/micro/examples/cwrapper/model.h"
 #include "tensorflow/lite/micro/examples/cwrapper/test_data.h"
 
-#define MAX_TENSOR_ARENA_SIZE 32 * 1024
+#define MAX_TENSOR_ARENA_SIZE 10 * 1024
 #define MIN_TENSOR_ARENA_SIZE 2 * 1024
 #define ARENA_TOLERANCE  1024
 
