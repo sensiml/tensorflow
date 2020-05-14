@@ -104,7 +104,9 @@ def parse_tensorflow_binary_model(model_binary):
 
     tf_model = tf.lite.Interpreter(model_content=binascii.unhexlify(model_binary))
     used_functions = set()
+    print("Model Summary")
     for op in tf_model._get_ops_details():
+        print(op)
         name = get_name_interpreter(op["op_name"])
         if name:
             used_functions.add(name)
@@ -138,7 +140,7 @@ def validate_micro_functions_available(used_functions, micro_functions):
                 )
             )
 
-    print("Found Ops", used_functions)
+    print("Operations to Include\n", used_functions)
 
 
 def gen_micro_mutable_ops_resolver_add(model, all_ops_path):
@@ -205,17 +207,14 @@ def fill_model_template_file(
     output="./model.cc",
     ):
 
-    print(type(model))
     
     model_str, model_length = to_c_hex(binascii.unhexlify(model))
     template = {'MODEL':"const unsigned char g_model[] DATA_ALIGN_ATTRIBUTE = {{{0}}};".format(model_str),
                 'MODEL_LENGTH':"const int g_model_len = {};".format(model_length)}
 
-    print(template)
     with open(template_path, "r") as fid:
         output_str = "".join(fid.readlines())
         for key, value in template.items():
-            print(value)
             output_str = re.sub(
                 r"//FILL_{}\b".format(key.upper()), value, output_str,
             )
@@ -264,9 +263,15 @@ if __name__ == "__main__":
 
         params = json.load(open(sys.argv[1],'r'))    
 
-        print(fill_micro_api_template_file(params['model_binary']))
+        
+        fill_micro_api_template_file(params['model_binary'])
+        print('generated model_api.c')
 
-        print(fill_model_template_file(params['model_binary']))
+        
+        fill_model_template_file(params['model_binary'])
+        print('generated model.cc')
 
-        print(fill_test_data(params['test_data']))
+        
+        fill_test_data(params['test_data'])
+        print('generated test_data.h')
 
