@@ -14,10 +14,10 @@ int __exidx_end(){return -1;};
 
 static bool set_static = false;
 
-
+//adapted from https://github.com/edgeimpulse/tflite-find-arena-size
 static int find_arena_size(const unsigned char* tflite_buffer, uint8_t * tensor_arena, int* arena_size_p, size_t a_low,
                            size_t a_high, size_t delta) {
-
+                            
 
   int low = a_low;
   int high = a_high;
