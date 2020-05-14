@@ -22,10 +22,20 @@ limitations under the License.
 
 // See train/README.md for a full description of the creation process.
 
-#ifndef TENSORFLOW_LITE_MICRO_EXAMPLES_CWRAPPER_MODEL_H_
-#define TENSORFLOW_LITE_MICRO_EXAMPLES_CWRAPPER_MODEL_H_
+#include "tensorflow/lite/micro/examples/model_tester/model.h"
 
-extern const unsigned char g_model[];
-extern const int g_model_len;
+// We need to keep the data array aligned on some architectures.
+#ifdef __has_attribute
+#define HAVE_ATTRIBUTE(x) __has_attribute(x)
+#else
+#define HAVE_ATTRIBUTE(x) 0
+#endif
+#if HAVE_ATTRIBUTE(aligned) || (defined(__GNUC__) && !defined(__clang__))
+#define DATA_ALIGN_ATTRIBUTE __attribute__((aligned(4)))
+#else
+#define DATA_ALIGN_ATTRIBUTE
+#endif
+ 
+//FILL_MODEL_LENGTH
+//FILL_MODEL
 
-#endif  // TENSORFLOW_LITE_MICRO_EXAMPLES_HELLO_WORLD_MODEL_H_

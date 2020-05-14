@@ -23,11 +23,9 @@ to include all ops
 
 `python codegen.py`
 
-
-
-
-
 you can generate the binary string directly from your tensorflow model
+
+
 
 ```python
 import binascii
