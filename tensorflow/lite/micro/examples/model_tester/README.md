@@ -1,30 +1,15 @@
-This is a simple project that can be used to generate 
-a binary or library file that can be included in your c projects.
+This is a simple project that can be used to test your model. 
 
-Modify the micro_api.cc to suit your specific application. 
+First call the codegen.py file and pass in the path to your model.json file. A test example is 
+included in the directory. The model.json file should include the tflite model as a string, 
+test data
 
-To generate the library file
-
-`make lib`
-
-you can link to libtensorflow-microlite.a and micro_api.h to use your model 
-in your project
-
-you can use the parse_micro_ops_function.py  in order to pull out of a tf_lite model
-only the necessary functions. 
-
-`python codegen.py <path-to-execution-params.json>
+`python codegen.py test_model.json`
 
 which will create the micro_api.cc file with a file containing only the operations
-that need to be loaded by the micro_mutable_ops_resolver. You can then build a much
-smaller library file to include in your project.
-
-to include all ops
-
-`python codegen.py`
+that need to be loaded by the micro_mutable_ops_resolver. 
 
 you can generate the binary string directly from your tensorflow model
-
 
 
 ```python

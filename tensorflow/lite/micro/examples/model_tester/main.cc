@@ -32,23 +32,29 @@ int main(int argc, char** argv) {
     printf("malloc failed.\n");
   }
 
-  printf("TEST INVOKE\n");
-  for (int index = 0; index < TEST_DATA_LENGTH; index++) {
-    for (int i = 0; i < MODEL_OUTPUTS; i++) {
-      results[i] = 0.0;
-    }
 
-    ret = test_invoke(g_model, tensor_arena, arena_size, test_data[index],
-                      MODEL_INPUTS, results, MODEL_OUTPUTS);
+  ret = tf_micro_model_setup(g_model, tensor_arena, arena_size, true);
 
-    if (ret == success) {
-      printf("Test Vector %d result: ", index);
+  if (ret == success) 
+  {
+
+    printf("TEST INVOKE\n");
+    for (int index = 0; index < TEST_DATA_LENGTH; index++) {
       for (int i = 0; i < MODEL_OUTPUTS; i++) {
-        printf("%f, ", results[i]);
         results[i] = 0.0;
       }
-      printf("\n");
+
+      ret = tf_micro_model_invoke(test_data[index], MODEL_INPUTS, results, MODEL_OUTPUTS);
+
+      if (ret == success) {
+        printf("Test Vector %d result: ", index);
+        for (int i = 0; i < MODEL_OUTPUTS; i++) {
+          printf("%f, ", results[i]);
+          results[i] = 0.0;
+        }
+        printf("\n");
+      }
     }
-  }
+}
 
 }

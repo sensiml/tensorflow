@@ -59,27 +59,4 @@ static int find_arena_size(const unsigned char* tflite_buffer, uint8_t * tensor_
 }
 
 
-static int test_invoke(const unsigned char* tflite_buffer, uint8_t* tensor_arena,  int arena_size,
-                       float* input_data, int num_inputs, float* results,
-                       int num_outputs) {
-  int ret = success;
-
-
-  if (set_static == false)
-  {
-    ret = tf_micro_model_setup(tflite_buffer, tensor_arena, arena_size, true);
-
-    set_static=true;
-    
-    if (ret != success) {
-      return ret;
-    }
-  }
-
-  ret = tf_micro_model_invoke(input_data, num_inputs, results, num_outputs);
-
-  return ret;
-}
-
-
 #endif  // TENSORFLOW_LITE_MICRO_API_BENCHMARK_H_
