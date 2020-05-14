@@ -14,6 +14,51 @@ int __exidx_end(){return -1;};
 
 static bool set_static = false;
 
+
+static int find_arena_size(const unsigned char* tflite_buffer, uint8_t * tensor_arena, int* arena_size_p, size_t a_low,
+                           size_t a_high, size_t delta) {
+
+
+  int low = a_low;
+  int high = a_high;
+  int curr = low + ((high - low) / 2);
+  int last_success = high;
+  int steps = 0;
+  int ret;
+
+  while (steps < 100) {
+    ++steps;
+    ret = tf_micro_model_setup(tflite_buffer, tensor_arena, curr, set_static);
+    printf("%d %d %d\n", ret, last_success, curr);
+
+    if (ret == success) {
+      last_success = curr;
+    }
+
+    if (ret == allocate_failed) {  // too low
+      low = curr;
+      curr = low + ((high - low) /2);
+    } else {
+      high = curr;
+      curr = high - ((high - low) /2);
+    }
+
+    if (low == curr || high == curr || (high - low) < delta) {
+      break;
+    }
+
+    if (last_success >= a_high || steps >= 99 ) {
+      return allocate_failed;
+    }
+
+  }
+
+  *arena_size_p = last_success;
+
+  return success;
+}
+
+
 static int test_invoke(const unsigned char* tflite_buffer, uint8_t* tensor_arena,  int arena_size,
                        float* input_data, int num_inputs, float* results,
                        int num_outputs) {
@@ -36,47 +81,5 @@ static int test_invoke(const unsigned char* tflite_buffer, uint8_t* tensor_arena
   return ret;
 }
 
-static int find_arena_size(const unsigned char* tflite_buffer, int* arena_size_p, size_t a_low,
-                           size_t a_high, size_t delta) {
-
-
-  int low = a_low;
-  int high = a_high;
-  int curr = low + ((high - low) / 2);
-  int last_success = high;
-  int steps = 0;
-
-  while (steps < 100) {
-    ++steps;
-
-    int r =   ret = tf_micro_model_setup(tflite_buffer, tensor_arena, curr, set_static);
-    //printf("%d %d %d\n", r, last_success, curr);
-
-    if (r == success) {
-      last_success = curr;
-    }
-
-    if (r == allocate_failed) {  // too low
-      low = curr;
-      curr = low + ((high - low) /2);
-    } else {
-      high = curr;
-      curr = high - ((high - low) /2);
-    }
-
-    if (low == curr || high == curr || (high - low) < delta) {
-      break;
-    }
-
-    if (last_success >= a_high || steps >= 99 ) {
-      return allocate_failed;
-    }
-
-  }
-
-  *arena_size_p = last_success;
-
-  return success;
-}
 
 #endif  // TENSORFLOW_LITE_MICRO_API_BENCHMARK_H_

@@ -2,19 +2,17 @@
 #include "tensorflow/lite/micro/examples/cwrapper/model.h"
 #include "tensorflow/lite/micro/examples/cwrapper/test_data.h"
 
-#define MAX_TENSOR_ARENA_SIZE = 32 * 1024
-#define MIN_TENSOR_ARENA_SIZE = 2 * 1024
-#define ARENA_TOLERANCE = 1024
+#define MAX_TENSOR_ARENA_SIZE 32 * 1024
+#define MIN_TENSOR_ARENA_SIZE 2 * 1024
+#define ARENA_TOLERANCE  1024
 
 uint8_t tensor_arena[MAX_TENSOR_ARENA_SIZE];
 
 int main(int argc, char** argv) {
   int arena_size = MAX_TENSOR_ARENA_SIZE;
   int* arena_size_p = &arena_size;
-  int ret;
-  int i;
 
-  ret = find_arena_size(g_model, tensor_arena, arena_size_p,
+  int ret = find_arena_size(g_model, tensor_arena, arena_size_p,
                         MIN_TENSOR_ARENA_SIZE, MAX_TENSOR_ARENA_SIZE,
                         ARENA_TOLERANCE);
 
@@ -36,7 +34,7 @@ int main(int argc, char** argv) {
 
   printf("TEST INVOKE\n");
   for (int index = 0; index < TEST_DATA_LENGTH; index++) {
-    for (i = 0; i < MODEL_OUTPUTS; i++) {
+    for (int i = 0; i < MODEL_OUTPUTS; i++) {
       results[i] = 0.0;
     }
 
@@ -45,7 +43,7 @@ int main(int argc, char** argv) {
 
     if (ret == success) {
       printf("Test Vector %d result: ", index);
-      for (i = 0; i < MODEL_OUTPUTS; i++) {
+      for (int i = 0; i < MODEL_OUTPUTS; i++) {
         printf("%f, ", results[i]);
         results[i] = 0.0;
       }
@@ -53,5 +51,4 @@ int main(int argc, char** argv) {
     }
   }
 
-  free(tensor_arena);
 }
