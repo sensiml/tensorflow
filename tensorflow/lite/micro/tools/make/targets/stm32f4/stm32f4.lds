@@ -30,7 +30,7 @@ limitations under the License.
 /* Define main entry point */
 ENTRY(_main)
 
-/* Renode Image has 256K of RAM and 2MB of FLASH */
+/* Renode Image stm32f4.repl has 256K of RAM and 2MB of FLASH */
 MEMORY {
 RAM (xrw) : ORIGIN = 0x20000000, LENGTH = 0x00040000
 FLASH (rx) : ORIGIN = 0x8000000, LENGTH = 0x200000
