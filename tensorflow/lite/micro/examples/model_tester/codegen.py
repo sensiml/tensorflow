@@ -23,7 +23,7 @@ def parse_model_file(path, variable_name):
 
 
 def parse_model_hex_string(hex_string):
-    """ this will parse the hex string form a model file 
+    """ this will parse the hex string form a model file
         only pass in the string with the hex values  '0x18, 0x00...
     '"""
     hex_string.replace(",\n", "")
@@ -207,7 +207,7 @@ def fill_model_template_file(
     output="./model.cc",
     ):
 
-    
+
     model_str, model_length = to_c_hex(binascii.unhexlify(model))
     template = {'MODEL':"const unsigned char g_model[] DATA_ALIGN_ATTRIBUTE = {{{0}}};".format(model_str),
                 'MODEL_LENGTH':"const int g_model_len = {};".format(model_length)}
@@ -229,7 +229,7 @@ def fill_test_data(
     template_path='./test_data.h.tpl',
     output='./test_data.h',
     ):
-    
+
     num_inputs = len(test_data[0])
     num_outputs= 5
     outputs = []
@@ -239,7 +239,7 @@ def fill_test_data(
     outputs.append("float results[MODEL_OUTPUTS] ={{ {} }};".format(', '.join(["0" for _ in range(num_outputs)])))
 
     outputs.append("float test_data[TEST_DATA_LENGTH][MODEL_INPUTS] = {")
-    
+
     for i in range(len(test_data)):
         outputs.append('{{ {} }},'.format('.0f,'.join([str(x) for x in test_data[i]])))
 
@@ -258,20 +258,24 @@ if __name__ == "__main__":
 
     if len(sys.argv) <= 1:
         fill_micro_api_template_file()
-    
+
     else:
+        params = json.load(open(sys.argv[1],'r'))
 
-        params = json.load(open(sys.argv[1],'r'))    
+        if params.get('model_path', None):
+            model = parse_model_file(params['model_path'], "g_model")
+        elif params.get('model_binary', None):
+            model = params['model_binary']
+        else:
+            raise Exception("must provide either model path or model binary")
 
-        
-        fill_micro_api_template_file(params['model_binary'])
+        fill_micro_api_template_file(model)
         print('generated model_api.c')
 
-        
-        fill_model_template_file(params['model_binary'])
+        fill_model_template_file(model)
         print('generated model.cc')
 
-        
+
         fill_test_data(params['test_data'])
         print('generated test_data.h')
 
