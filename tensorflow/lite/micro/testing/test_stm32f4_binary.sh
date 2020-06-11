@@ -23,34 +23,34 @@
 # This script must be run from the top-level folder of the tensorflow github
 # repository as it mounts `pwd` to the renode docker image (via docker run -v)
 # and paths in the docker run command assume the entire tensorflow repo is mounted.
-
 declare -r ROOT_DIR=`pwd`
-declare -r TEST_TMPDIR=/tmp/test_stm32f4_binary/
-declare -r MICRO_LOG_PATH=${TEST_TMPDIR}
+declare -r WORKSPACE=/workspace
+declare -r MICRO_LOG_PATH=${WORKSPACE}/tensorflow/lite/micro/testing/logs
+declare -r HOST_MICRO_LOG_PATH=${ROOT_DIR}/tensorflow/lite/micro/testing/logs
 declare -r MICRO_LOG_FILENAME=${MICRO_LOG_PATH}/logs.txt
-mkdir -p ${MICRO_LOG_PATH}
+mkdir -p ${HOST_MICRO_LOG_PATH}
 
 docker build -t renode_stm32f4 \
   -f ${ROOT_DIR}/tensorflow/lite/micro/testing/Dockerfile.stm32f4 \
   ${ROOT_DIR}/tensorflow/lite/micro/testing/
 
 exit_code=0
+
 # running in `if` to avoid setting +e
 if ! docker run \
   --log-driver=none -a stdout -a stderr \
-  -v ${ROOT_DIR}:/workspace \
-  -v /tmp:/tmp \
-  -e BIN=/workspace/$1 \
-  -e SCRIPT=/workspace/tensorflow/lite/micro/testing/stm32f4.resc \
+  -v ${ROOT_DIR}:${WORKSPACE} \
+  -e BIN=${WORKSPACE}/$1 \
+  -e SCRIPT=${WORKSPACE}/tensorflow/lite/micro/testing/stm32f4.resc \
+  -p 3333:3333 \
   -e EXPECTED="$2" \
-  -it renode_stm32f4 \
-  /bin/bash -c "/opt/renode/tests/test.sh /workspace/tensorflow/lite/micro/testing/stm32f4.robot 2>&1 >${MICRO_LOG_FILENAME}"
+  renode_stm32f4 \
+  /bin/bash -c "/opt/renode/tests/test.sh /workspace/tensorflow/lite/micro/testing/stm32f4.robot 2>&1 > ${MICRO_LOG_FILENAME} && cp *.xml *html ${MICRO_LOG_PATH}"
 then
+  echo "DOCKER FAILED TO RUN"
   exit_code=1
 fi
 
-echo "LOGS:"
-cat ${MICRO_LOG_FILENAME}
 if [ $exit_code -eq 0 ]
 then
   echo "$1: PASS"
@@ -58,3 +58,4 @@ else
   echo "$1: FAIL - '$2' not found in logs."
 fi
 exit $exit_code
+                                     

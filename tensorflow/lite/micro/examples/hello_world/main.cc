@@ -15,6 +15,11 @@ limitations under the License.
 
 #include "tensorflow/lite/micro/examples/hello_world/main_functions.h"
 
+extern "C" {
+int __exidx_start(){return -1;}; //some library wants these set, note sure what, exceptions should be disabled. https://forum.pjrc.com/threads/57192-Teensy-4-0-linker-issues-with-STL-libraries
+int __exidx_end(){return -1;};
+}
+
 // This is the default main used on systems that have the standard C entry
 // point. Other devices (for example FreeRTOS or ESP32) that have different
 // requirements for entry code (like an app_main function) should specialize

@@ -54,7 +54,7 @@ def gen_model_functions(function_list, all_ops_code):
 
     M = [
         "  // Only Pull in functions that are needed by the model",
-        "  static tflite::MicroMutableOpResolver resolver;",
+        "  static tflite::MicroMutableOpResolver<{}> resolver;".format(len(function_list)),
     ]
 
     #template = "  resolver.AddBuiltin(tflite::BuiltinOperator_{0}, tflite::ops::micro::Register_{0}());"
@@ -62,7 +62,7 @@ def gen_model_functions(function_list, all_ops_code):
     
     for function in sorted(list(function_list)): # sort so always in same order
         print(all_ops_code[function])
-        M.append(template.format(all_ops_code[function].replace('BuiltinOperator','tflite::BuiltinOperator')))
+        M.append(template.format(all_ops_code[function].replace('BuiltinOperator','tflite::BuiltinOperator'))+';')
 
     return M
 

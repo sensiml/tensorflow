@@ -24,6 +24,18 @@ limitations under the License.
 #include "tensorflow/lite/schema/schema_generated.h"
 #include "tensorflow/lite/version.h"
 
+
+ 
+#define BIG_ENDIAN 0
+#define LITTLE_ENDIAN 1
+
+int TestByteOrder() {
+        short int word = 0x0001;
+        char *b = (char *)&word;
+        return (b[0] ? LITTLE_ENDIAN : BIG_ENDIAN);
+}
+ 
+
 // Globals, used for compatibility with Arduino-style sketches.
 namespace {
 tflite::ErrorReporter* error_reporter = nullptr;
@@ -36,15 +48,19 @@ int inference_count = 0;
 // Create an area of memory to use for input, output, and intermediate arrays.
 // Minimum arena size, at the time of writing. After allocating tensors
 // you can retrieve this value by invoking interpreter.arena_used_bytes().
-const int kModelArenaSize = 2468;
+const int kModelArenaSize = 4048;
 // Extra headroom for model + alignment + future interpreter changes.
 const int kExtraArenaSize = 560 + 16 + 100;
 const int kTensorArenaSize = kModelArenaSize + kExtraArenaSize;
 uint8_t tensor_arena[kTensorArenaSize];
 }  // namespace
 
+
 // The name of this function is important for Arduino compatibility.
 void setup() {
+
+
+  int r = TestByteOrder();
   // Set up logging. Google style is to avoid globals or statics because of
   // lifetime uncertainty, but since this has a trivial destructor it's okay.
   // NOLINTNEXTLINE(runtime-global-variables)
@@ -69,6 +85,7 @@ void setup() {
   // Build an interpreter to run the model with.
   static tflite::MicroInterpreter static_interpreter(
       model, resolver, tensor_arena, kTensorArenaSize, error_reporter);
+
   interpreter = &static_interpreter;
 
   // Allocate memory from the tensor_arena for the model's tensors.

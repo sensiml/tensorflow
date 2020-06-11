@@ -17,7 +17,7 @@ Should Run Stm32f4 Test
     Execute Command           $bin = @${BIN}
     Execute Script            ${SCRIPT}
 
-    Create Terminal Tester    ${UART}  timeout=30
-    Start Emulation
+
+    Create Terminal Tester    ${UART}  timeout=1200
 
     Wait For Line On Uart     ${EXPECTED}
