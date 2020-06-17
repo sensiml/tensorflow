@@ -38,6 +38,6 @@ void loop() {
     {
         tf_results[i] = 0.0;
     }
-    model_invoke(test_data[index], MODEL_INPUTS, tf_results, MODEL_OUTPUTS);
+    model_invoke(test_data[index], MODEL_INPUTS, results, MODEL_OUTPUTS);
   }
 }

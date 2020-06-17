@@ -4,7 +4,8 @@ TENSORFLOW_ROOT=/home/cknorow/packages/tensorflow/
 
 pushd $TENSORFLOW_ROOT
 
-make -f tensorflow/lite/micro/tools/make/Makefile TARGET=zephyr_vexriscv -j $1_bin
+make -f tensorflow/lite/micro/tools/make/Makefile -j TARGET=zephyr_vexriscv  $1_bin
+#make -f tensorflow/lite/micro/tools/make/Makefile -j  $1_bin
 
 TF_BUILD_DIR=$TENSORFLOW_ROOT/tensorflow/lite/micro/tools/make/gen/zephyr_vexriscv_x86_64
 

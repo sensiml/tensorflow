@@ -22,7 +22,7 @@ limitations under the License.
 
 // See train/README.md for a full description of the creation process.
 
-#include "tensorflow/lite/micro/examples/model_tester/model.h"
+#include "tensorflow/lite/micro/examples/model_runner/model.h"
 
 // We need to keep the data array aligned on some architectures.
 #ifdef __has_attribute

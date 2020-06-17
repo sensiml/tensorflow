@@ -13,18 +13,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#include "tensorflow/lite/micro/examples/model_runner/main_functions.h"
+#include "tensorflow/lite/micro/examples/model_runner/micro_api.h"
 #include "tensorflow/lite/micro/examples/model_runner/output_handler.h"
 
 
 #include "tensorflow/lite/micro/kernels/micro_ops.h"
 #include "tensorflow/lite/micro/micro_error_reporter.h"
 #include "tensorflow/lite/micro/micro_interpreter.h"
-#include "tensorflow/lite/micro/micro_mutable_op_resolver.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 #include "tensorflow/lite/version.h"
-
-
 #include "tensorflow/lite/micro/micro_mutable_op_resolver.h"
 
 // Globals, used for compatibility with Arduino-style sketches.

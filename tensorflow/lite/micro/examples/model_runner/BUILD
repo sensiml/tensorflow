@@ -11,24 +11,12 @@ package(default_visibility = ["//visibility:public"])
 licenses(["notice"])  # Apache 2.0
 
 cc_library(
-    name = "magic_wand_model_data",
+    name = "model",
     srcs = [
-        "magic_wand_model_data.cc",
+        "model.cc",
     ],
     hdrs = [
-        "magic_wand_model_data.h",
-    ],
-)
-
-cc_library(
-    name = "sample_feature_data",
-    srcs = [
-        "ring_micro_features_data.cc",
-        "slope_micro_features_data.cc",
-    ],
-    hdrs = [
-        "ring_micro_features_data.h",
-        "slope_micro_features_data.h",
+        "model.h",
     ],
 )
 
@@ -50,27 +38,6 @@ tflite_micro_cc_test(
     ],
 )
 
-cc_library(
-    name = "constants",
-    hdrs = [
-        "constants.h",
-    ],
-)
-
-cc_library(
-    name = "accelerometer_handler",
-    srcs = [
-        "accelerometer_handler.cc",
-    ],
-    hdrs = [
-        "accelerometer_handler.h",
-    ],
-    deps = [
-        "//tensorflow/lite/c:common",
-        "//tensorflow/lite/micro:micro_error_reporter",
-    ],
-)
-
 tflite_micro_cc_test(
     name = "accelerometer_handler_test",
     srcs = [
@@ -86,18 +53,6 @@ tflite_micro_cc_test(
     ],
 )
 
-cc_library(
-    name = "gesture_predictor",
-    srcs = [
-        "gesture_predictor.cc",
-    ],
-    hdrs = [
-        "gesture_predictor.h",
-    ],
-    deps = [
-        ":constants",
-    ],
-)
 
 tflite_micro_cc_test(
     name = "gesture_predictor_test",
@@ -140,11 +95,13 @@ tflite_micro_cc_test(
 )
 
 cc_binary(
-    name = "magic_wand",
+    name = "model_runner",
     srcs = [
         "main.cc",
         "main_functions.cc",
         "main_functions.h",
+        "micro_api.cc",
+        "micro_api.h"
     ],
     copts = [
         "-Werror",
@@ -152,10 +109,7 @@ cc_binary(
         "-Wsign-compare",
     ],
     deps = [
-        ":accelerometer_handler",
-        ":constants",
-        ":gesture_predictor",
-        ":magic_wand_model_data",
+        ":model",
         ":output_handler",
         "//tensorflow/lite:schema_fbs_version",
         "//tensorflow/lite/micro:micro_error_reporter",
