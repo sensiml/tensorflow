@@ -52,13 +52,18 @@ void model_setup(const void* model_data, uint8_t* tensor_arena, int kTensorArena
   }
 
   // Only Pull in functions that are needed by the model
-  static tflite::MicroMutableOpResolver<4> resolver;
+  static tflite::MicroMutableOpResolver<8> resolver;
+    resolver.AddBuiltin(tflite::BuiltinOperator_CONV_2D, tflite::ops::micro::Register_CONV_2D());
     resolver.AddBuiltin(tflite::BuiltinOperator_DEQUANTIZE,
              tflite::ops::micro::Register_DEQUANTIZE());
     resolver.AddBuiltin(tflite::BuiltinOperator_FULLY_CONNECTED,
              tflite::ops::micro::Register_FULLY_CONNECTED());
+    resolver.AddBuiltin(tflite::BuiltinOperator_MAX_POOL_2D,
+             tflite::ops::micro::Register_MAX_POOL_2D());
     resolver.AddBuiltin(tflite::BuiltinOperator_QUANTIZE, tflite::ops::micro::Register_QUANTIZE());
     resolver.AddBuiltin(tflite::BuiltinOperator_RELU, tflite::ops::micro::Register_RELU());
+    resolver.AddBuiltin(tflite::BuiltinOperator_RESHAPE, tflite::ops::micro::Register_RESHAPE());
+    resolver.AddBuiltin(tflite::BuiltinOperator_SOFTMAX, tflite::ops::micro::Register_SOFTMAX());
 
   static tflite::MicroInterpreter static_interpreter(
       model, resolver, tensor_arena, kTensorArenaSize, error_reporter);

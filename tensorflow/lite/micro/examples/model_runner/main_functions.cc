@@ -16,10 +16,11 @@ limitations under the License.
 #include "tensorflow/lite/micro/examples/model_runner/micro_api.h"
 #include "tensorflow/lite/micro/examples/model_runner/model.h"
 #include "tensorflow/lite/micro/examples/model_runner/test_data.h"
+#include "tensorflow/lite/micro/debug_log.h"
 
 // Globals, used for compatibility with Arduino-style sketches.
 namespace {
-// Create an area of memory to use for input, output, and intermediate arrays.
+// Create an area of memory to use for input, output, and intermediate arrays.\
 // The size of this will depend on the model you're using, and may need to be
 // determined by experimentation.
 constexpr int kTensorArenaSize = 60 * 1024;
@@ -29,6 +30,24 @@ float tf_results[MODEL_OUTPUTS];
 
 // The name of this function is important for Arduino compatibility.
 void setup() {
+
+    ret =
+
+  if (ret == success) {
+    DebugLog("Approximate Arena Size is %d\n", arena_size);
+  }
+
+  else if (ret == version_unspported) {
+    DebugLog("unuported version.\n");
+  }
+
+  else if (ret == allocate_failed) {
+   DebugLog("allocation failed.\n");
+  }
+
+  else if (ret == malloc_failed) {
+    DebugLog("malloc failed.\n");
+  }
     model_setup(g_model, tensor_arena, kTensorArenaSize);
 }
 
