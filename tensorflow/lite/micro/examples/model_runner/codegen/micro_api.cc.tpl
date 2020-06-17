@@ -14,9 +14,8 @@ limitations under the License.
 ==============================================================================*/
 
 #include "tensorflow/lite/micro/examples/model_runner/main_functions.h"
-#include "tensorflow/lite/micro/examples/model_runner/model.h"
 #include "tensorflow/lite/micro/examples/model_runner/output_handler.h"
-#include "tensorflow/lite/micro/examples/model_runner/test_data.h"
+
 
 #include "tensorflow/lite/micro/kernels/micro_ops.h"
 #include "tensorflow/lite/micro/micro_error_reporter.h"
@@ -34,18 +33,11 @@ tflite::ErrorReporter* error_reporter = nullptr;
 const tflite::Model* model = nullptr;
 tflite::MicroInterpreter* interpreter = nullptr;
 TfLiteTensor* model_input = nullptr;
-int input_length;
-int test_vector;
-
-// Create an area of memory to use for input, output, and intermediate arrays.
-// The size of this will depend on the model you're using, and may need to be
-// determined by experimentation.
-constexpr int kTensorArenaSize = 60 * 1024;
-uint8_t tensor_arena[kTensorArenaSize];
+TfLiteTensor* model_output = nullptr;
 }  // namespace
 
 // The name of this function is important for Arduino compatibility.
-void setup() {
+void model_setup(const void* model_data, uint8_t* tensor_arena, int kTensorArenaSize) {
   // Set up logging. Google style is to avoid globals or statics because of
   // lifetime uncertainty, but since this has a trivial destructor it's okay.
   static tflite::MicroErrorReporter micro_error_reporter;  // NOLINT
@@ -53,7 +45,7 @@ void setup() {
 
   // Map the model into a usable data structure. This doesn't involve any
   // copying or parsing, it's a very lightweight operation.
-  model = tflite::GetModel(g_model);
+  model = tflite::GetModel(model_data);
   if (model->version() != TFLITE_SCHEMA_VERSION) {
     TF_LITE_REPORT_ERROR(error_reporter,
                          "Model provided is schema version %d not equal "
@@ -73,39 +65,49 @@ void setup() {
 
   // Obtain pointer to the model's input tensor.
   model_input = interpreter->input(0);
+  model_output = interpreter->output(0);
   
   return;
 
   
 }
 
-void loop() {
+void model_invoke(float* input_data, int num_inputs, float* results, int num_outputs) {
   // Attempt to read new data from the accelerometer.
 
 
-  for (int i =0; i< MODEL_INPUTS; i++)
+  for (int i =0; i< num_inputs; i++)
   {
-    model_input->data.f[i] = test_data[test_vector][i];
+    model_input->data.f[i] = input_data[i];
   }
   
   // Run inference, and report any error.
   TfLiteStatus invoke_status = interpreter->Invoke();
 
   if (invoke_status != kTfLiteOk) {
-    TF_LITE_REPORT_ERROR(error_reporter, "Invoke failed on index: %d\n",
-                      test_vector);
+    TF_LITE_REPORT_ERROR(error_reporter, "Invoke failed on index");
     return;
   }
 
 
   // Read the predicted y value from the model's output tensor
 
+  int result_index=0;
+  float max_value = model_output->data.f[0];
+
+  for (int i=1; i< num_outputs; i++ )
+  {
+      results[i] = model_output->data.f[i];
+      if (results[i] > max_value)
+      {
+        max_value = results[i];
+        result_index = i;
+      }
+      
+  }
 
   // Produce an output
-  HandleOutput(error_reporter, 1);
-
-  if (test_vector >= TEST_DATA_LENGTH)
-  {
-    test_vector=0;
-  }
+  HandleOutput(error_reporter, result_index);
 }
+
+
