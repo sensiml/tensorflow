@@ -161,9 +161,9 @@ def gen_micro_mutable_ops_resolver_add(model, all_ops_path):
 
 def fill_micro_api_template_file(
     model=None,
-    template_path="./templates/micro_api.cc.tpl",
-    output="./micro_api.cc",
-    all_ops_path="../../all_ops_resolver.cc",
+    template_path="./main_functions.cc.tpl",
+    output="..//main_functions.cc",
+    all_ops_path="../../../all_ops_resolver.cc",
 ):
 
     default_template = {
@@ -208,8 +208,8 @@ def to_c_hex(tflite_model):
 
 def fill_model_template_file(
     model,
-    template_path="./templates/model.cc.tpl",
-    output="./model.cc",
+    template_path="./model.cc.tpl",
+    output="../model.cc",
     ):
 
 
@@ -231,8 +231,7 @@ def fill_model_template_file(
 
 def fill_test_data(
     test_data,
-    template_path='./templates/test_data.h.tpl',
-    output='./test_data.h',
+    output='../test_data.h',
     ):
 
     num_inputs = len(test_data[0])
@@ -254,6 +253,19 @@ def fill_test_data(
         out.write('\n'.join(outputs))
 
     return '\n'.join(outputs)
+
+def fill_class_map(
+    class_map,
+    template_path='output_handerl.cc.tpl',
+    output='../output_handler.cc'
+    ):
+
+    outputs = []
+    outputs.append("switch (result){")
+    for index, value in class_map:
+        outputs.append('case ({}):'.format(index))
+        outputs.append('\t'+'TF_LITE_REPORT_ERROR( error_reporter,"{}");'.format(value))
+    outputs.append('}')
 
 if __name__ == "__main__":
 

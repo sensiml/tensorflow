@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.13.1)
 include($ENV{ZEPHYR_BASE}/cmake/app/boilerplate.cmake NO_POLICY_SCOPE)
-project(tf_lite_magic_wand)
+project(tf_lite_model_tester)
 
 set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} %{CXX_FLAGS}%")
 set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} %{CC_FLAGS}%")
