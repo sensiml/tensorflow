@@ -92,5 +92,9 @@ int find_arena_size(const unsigned char* tflite_buffer, uint8_t * tensor_arena, 
 
   *arena_size_p = last_success;
 
+
+
+  TF_LITE_REPORT_ERROR(error_reporter, "FOUND TENSOR SIZE: %d", last_success);
+
   return 0;
 }
