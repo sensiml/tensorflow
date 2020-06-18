@@ -16,6 +16,7 @@ limitations under the License.
 #include "tensorflow/lite/micro/examples/model_runner/micro_api.h"
 #include "tensorflow/lite/micro/examples/model_runner/model.h"
 #include "tensorflow/lite/micro/examples/model_runner/test_data.h"
+#include "tensorflow/lite/micro/examples/model_runner/memory_benchmark.h"
 #include "tensorflow/lite/micro/debug_log.h"
 
 // Globals, used for compatibility with Arduino-style sketches.
@@ -23,32 +24,32 @@ namespace {
 // Create an area of memory to use for input, output, and intermediate arrays.\
 // The size of this will depend on the model you're using, and may need to be
 // determined by experimentation.
-constexpr int kTensorArenaSize = 60 * 1024;
-unsigned char tensor_arena[kTensorArenaSize];
+constexpr int kTensorArenaSize_max = 60 * 1024;
+constexpr int kTensorArenaSize_min = 2 * 1024;
+constexpr int kTensorArenaSize_tolerance = 1024;
+unsigned char tensor_arena[kTensorArenaSize_max];
 float tf_results[MODEL_OUTPUTS];
 }  // namespace
 
 // The name of this function is important for Arduino compatibility.
 void setup() {
+  
+  int arena_size = kTensorArenaSize_max;
+  int* arena_size_p = &arena_size;
+  int ret;
 
-    ret =
+  ret = find_arena_size(g_model, tensor_arena, arena_size_p,
+                        kTensorArenaSize_min, kTensorArenaSize_max,
+                        kTensorArenaSize_tolerance);
 
-  if (ret == success) {
-    DebugLog("Approximate Arena Size is %d\n", arena_size);
-  }
-
-  else if (ret == version_unspported) {
-    DebugLog("unuported version.\n");
-  }
-
-  else if (ret == allocate_failed) {
+  if (ret == 1) {
    DebugLog("allocation failed.\n");
   }
-
-  else if (ret == malloc_failed) {
-    DebugLog("malloc failed.\n");
+  else if (ret == 2) {
+    DebugLog("unsupported version.\n");
   }
-    model_setup(g_model, tensor_arena, kTensorArenaSize);
+  
+  model_setup(g_model, tensor_arena, arena_size);
 }
 
 void loop() {

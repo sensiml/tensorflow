@@ -58,7 +58,12 @@ void model_setup(const void* model_data, uint8_t* tensor_arena, int kTensorArena
   interpreter = &static_interpreter;
 
   // Allocate memory from the tensor_arena for the model's tensors.
-  interpreter->AllocateTensors();
+  TfLiteStatus allocate_status = interpreter->AllocateTensors();
+
+  if (allocate_status != kTfLiteOk) {
+    TF_LITE_REPORT_ERROR(error_reporter, "Allocate failed for tensor size %d", kTensorArenaSize);
+    return;
+  }
 
   // Obtain pointer to the model's input tensor.
   model_input = interpreter->input(0);
