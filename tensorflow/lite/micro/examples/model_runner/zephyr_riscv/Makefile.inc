@@ -27,4 +27,12 @@ model_runner_bin: generate_model_runner_cmake_project $(PRJDIR)model_runner/cmak
 	  cmake -B${GENDIR}model_runner/build -DBOARD="litex_vexriscv" -H${PRJDIR}model_runner/cmake/ -DPython_ROOT_DIR=${ZEPHYR_BASE}/venv-zephyr/bin/; \
 	  make -C ${GENDIR}model_runner/build; \
 	)
+
+
+#We are skipping here copy of `zephyr` third_party repository 
+#To compile standalone project ZEPHYR_BASE enviroment variable should be set
+test_model_runner: model_runner_bin
+	( \
+	  ${TENSORFLOW_ROOT}/tensorflow/lite/micro/testing/test_zephyr_vexriscv_binary.sh; \
+	)
 endif
