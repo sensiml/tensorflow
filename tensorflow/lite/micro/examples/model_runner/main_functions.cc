@@ -43,10 +43,10 @@ void setup() {
                         kTensorArenaSize_tolerance);
 
   if (ret == 1) {
-   DebugLog("allocation failed.\n");
+   DebugLog("ALLOCATION FAILED.\n");
   }
   else if (ret == 2) {
-    DebugLog("unsupported version.\n");
+    DebugLog("UNSUPPORTED VERSION.\n");
   }
   
   model_setup(g_model, tensor_arena, arena_size);
@@ -60,4 +60,5 @@ void loop() {
     }
     model_invoke(test_data[index], MODEL_INPUTS, results, MODEL_OUTPUTS);
   }
+   DebugLog("ALL TESTS PASSED\n");
 }

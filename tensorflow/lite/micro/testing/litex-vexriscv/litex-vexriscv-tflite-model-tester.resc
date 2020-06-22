@@ -1,0 +1,15 @@
+using sysbus
+
+include $ORIGIN/LiteX_I2C_Zephyr.cs
+
+mach create
+machine LoadPlatformDescription $ORIGIN/litex-vexriscv-tflite.repl
+showAnalyzer uart
+
+macro reset
+"""
+    sysbus LoadELF $ORIGIN/../binaries/model_tester/zephyr.elf
+
+"""
+
+runMacro $reset
