@@ -12,7 +12,7 @@ Run TF Model
     ${EXPECTED} =             Get Environment Variable    EXPECTED
 
     Execute Command           logFile @${SCRIPT_DIR}/../logs/zephyr-vexrisxv.log
-    
+
     Execute Command           using sysbus
 
     Execute Command           include @${SCRIPT_DIR}/LiteX_I2C_Zephyr.cs
@@ -31,5 +31,7 @@ Run TF Model
     Start Emulation
 
     Wait For Line On Uart     Booting Zephyr OS
+
+    Wait For Line On Uart     FOUND TENSOR SIZE:
 
     Wait For Line On Uart     ${EXPECTED}
