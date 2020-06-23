@@ -18,6 +18,7 @@ limitations under the License.
 #include "tensorflow/lite/micro/examples/model_runner/test_data.h"
 #include "tensorflow/lite/micro/examples/model_runner/memory_benchmark.h"
 #include "tensorflow/lite/micro/examples/model_runner/output_handler.h"
+#include "tensorflow/lite/micro/micro_error_reporter.h"
 #include "tensorflow/lite/micro/debug_log.h"
 
 // Globals, used for compatibility with Arduino-style sketches.
