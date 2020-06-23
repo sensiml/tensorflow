@@ -11,6 +11,8 @@ Run TF Model
     ${SCRIPT_DIR} =           Get Environment Variable    SCRIPT_DIR
     ${EXPECTED} =             Get Environment Variable    EXPECTED
 
+    Execute Command           logFile @${SCRIPT_DIR}/../logs/zephyr-vexrisxv.log
+    
     Execute Command           using sysbus
 
     Execute Command           include @${SCRIPT_DIR}/LiteX_I2C_Zephyr.cs
@@ -25,8 +27,6 @@ Run TF Model
     Execute Command           sysbus LoadELF $bin
 
     Create Terminal Tester    sysbus.uart  timeout=30
-
-    Execute Command           logFile @${SCRIPT_DIR}/../logs/zephyr-vexrisxv.log
 
     Start Emulation
 
