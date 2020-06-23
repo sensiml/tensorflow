@@ -90,26 +90,7 @@ void model_invoke(float* input_data, int num_inputs, float* results, int num_out
     TF_LITE_REPORT_ERROR(error_reporter, "Invoke failed on index");
     return;
   }
-
-
-void model_invoke(float* input_data, int num_inputs, float* results, int num_outputs) {
-  // Attempt to read new data from the accelerometer.
-
-
-  for (int i =0; i< num_inputs; i++)
-  {
-    model_input->data.f[i] = input_data[i];
-  }
   
-  // Run inference, and report any error.
-  TfLiteStatus invoke_status = interpreter->Invoke();
-
-  if (invoke_status != kTfLiteOk) {
-    TF_LITE_REPORT_ERROR(error_reporter, "Invoke failed on index");
-    return;
-  }
-
-
   // Read the predicted y value from the model's output tensor
   for (int i=1; i< num_outputs; i++ )
   {
