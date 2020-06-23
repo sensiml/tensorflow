@@ -17,6 +17,7 @@ limitations under the License.
 #include "tensorflow/lite/micro/examples/model_runner/model.h"
 #include "tensorflow/lite/micro/examples/model_runner/test_data.h"
 #include "tensorflow/lite/micro/examples/model_runner/memory_benchmark.h"
+#include "tensorflow/lite/micro/examples/model_runner/output_handler.h"
 #include "tensorflow/lite/micro/debug_log.h"
 
 // Globals, used for compatibility with Arduino-style sketches.
@@ -53,12 +54,30 @@ void setup() {
 }
 
 void loop() {
+  int result_index=0;
+  float max_value = 0.0f;
+
+  tflite::ErrorReporter* error_reporter = (tflite::ErrorReporter *)get_micro_api_error_reporter();
+  
   for (int index = 0; index < TEST_DATA_LENGTH; index++) {
     for (int i = 0; i < MODEL_OUTPUTS; i++) 
     {
         tf_results[i] = 0.0;
     }
     model_invoke(test_data[index], MODEL_INPUTS, results, MODEL_OUTPUTS);
+
+    max_value = results[0];
+    result_index=0;
+    for (int i = 1; i < MODEL_OUTPUTS; i++) 
+    {
+      if (results[i] > max_value)
+      {
+        max_value = results[i];
+        result_index = i;
+      }
+    }
+    // Produce an output
+    HandleOutput(error_reporter, result_index);
   }
    DebugLog("ALL_TESTS_PASSED\n");
 }

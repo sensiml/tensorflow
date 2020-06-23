@@ -92,24 +92,36 @@ void model_invoke(float* input_data, int num_inputs, float* results, int num_out
   }
 
 
-  // Read the predicted y value from the model's output tensor
+void model_invoke(float* input_data, int num_inputs, float* results, int num_outputs) {
+  // Attempt to read new data from the accelerometer.
 
-  int result_index=0;
-  float max_value = model_output->data.f[0];
 
-  for (int i=1; i< num_outputs; i++ )
+  for (int i =0; i< num_inputs; i++)
   {
-      results[i] = model_output->data.f[i];
-      if (results[i] > max_value)
-      {
-        max_value = results[i];
-        result_index = i;
-      }
-      
+    model_input->data.f[i] = input_data[i];
+  }
+  
+  // Run inference, and report any error.
+  TfLiteStatus invoke_status = interpreter->Invoke();
+
+  if (invoke_status != kTfLiteOk) {
+    TF_LITE_REPORT_ERROR(error_reporter, "Invoke failed on index");
+    return;
   }
 
-  // Produce an output
-  HandleOutput(error_reporter, result_index);
+
+  // Read the predicted y value from the model's output tensor
+  for (int i=1; i< num_outputs; i++ )
+  {
+      results[i] = model_output->data.f[i];     
+  }
+
+}
+
+
+void * get_micro_api_error_reporter()
+{
+  return error_reporter;
 }
 
 
