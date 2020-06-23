@@ -93,6 +93,9 @@ def get_activation_interpreter(activation):
         "SHAPE",
         "READVARIABLEOP",
         "MAXPOOL",
+        "DEPTHWISE_FOLD_BIAS",
+        "CONV2D_FOLD_BIAS",
+        "AVGPOOL",
     ]
 
     if any(x in activation.upper() for x in ignored_functions):
@@ -108,6 +111,10 @@ def get_activation_interpreter(activation):
 def parse_tensorflow_binary_model(model_binary):
 
     tf_model = tf.lite.Interpreter(model_content=binascii.unhexlify(model_binary))
+
+    with open("model.tflite", "wb") as out:
+        out.write(binascii.unhexlify(model_binary))
+
     used_functions = set()
     print("Model Summary")
     for op in tf_model._get_ops_details():
