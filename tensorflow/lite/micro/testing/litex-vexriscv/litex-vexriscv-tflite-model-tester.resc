@@ -8,7 +8,7 @@ showAnalyzer uart
 
 macro reset
 """
-    sysbus LoadELF $ORIGIN/../binaries/model_tester/zephyr.elf
+    sysbus LoadELF $ORIGIN/zephyr.elf
 
 """
 

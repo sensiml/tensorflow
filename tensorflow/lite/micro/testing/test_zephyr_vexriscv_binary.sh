@@ -31,10 +31,6 @@ declare -r HOST_MICRO_LOG_PATH=${ROOT_DIR}/tensorflow/lite/micro/testing/logs
 declare -r MICRO_LOG_FILENAME=${MICRO_LOG_PATH}/logs.txt
 mkdir -p ${HOST_MICRO_LOG_PATH}
 
-docker build -t renode_stm32f4 \
-  -f ${ROOT_DIR}/tensorflow/lite/micro/testing/Dockerfile.stm32f4 \
-  ${ROOT_DIR}/tensorflow/lite/micro/testing/
-
 exit_code=0
 
 # running in `if` to avoid setting +e
@@ -46,7 +42,7 @@ if ! docker run \
   -e SCRIPT=${SCRIPT_DIR}litex-vexriscv-tflite-model-tester.resc \
   -p 3333:3333 \
   -e EXPECTED="$2" \
-  renode_stm32f4 \
+  antmicro/renode \
   /bin/bash -c "/opt/renode/tests/test.sh /workspace/tensorflow/lite/micro/testing/litex-vexriscv-tflite.robot 2>&1 > ${MICRO_LOG_FILENAME} && cp *.xml *html ${MICRO_LOG_PATH}"
 then
   echo "DOCKER FAILED TO RUN"

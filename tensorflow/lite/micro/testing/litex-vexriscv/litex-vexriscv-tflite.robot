@@ -2,12 +2,7 @@
 Suite Setup                   Setup
 Suite Teardown                Teardown
 Test Setup                    Reset Emulation
-Resource                      ${RENODEKEYWORDS}
-
-*** Keywords ***
-Wait For Results
-    Wait For Line On Uart         ALL TESTS PASSED
-
+Resource                      /opt/renode/tests/renode-keywords.robot
 
 
 *** Test Cases ***
