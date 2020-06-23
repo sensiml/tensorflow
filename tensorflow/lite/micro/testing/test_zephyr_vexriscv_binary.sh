@@ -26,7 +26,7 @@
 declare -r ROOT_DIR=`pwd`
 declare -r WORKSPACE=/workspace
 declare -r MICRO_LOG_PATH=${WORKSPACE}/tensorflow/lite/micro/testing/logs
-declare -r SCRIPT_DIR=${WORKSPACE}/tensorflow/lite/micro/testing/litex-vexriscv/
+declare -r SCRIPT_DIR=${WORKSPACE}/tensorflow/lite/micro/testing/zephyr-vexriscv/
 declare -r HOST_MICRO_LOG_PATH=${ROOT_DIR}/tensorflow/lite/micro/testing/logs
 declare -r MICRO_LOG_FILENAME=${MICRO_LOG_PATH}/logs.txt
 mkdir -p ${HOST_MICRO_LOG_PATH}
@@ -43,7 +43,7 @@ if ! docker run \
   -p 3333:3333 \
   -e EXPECTED="$2" \
   antmicro/renode \
-  /bin/bash -c "/opt/renode/tests/test.sh /workspace/tensorflow/lite/micro/testing/litex-vexriscv-tflite.robot 2>&1 > ${MICRO_LOG_FILENAME} && cp *.xml *html ${MICRO_LOG_PATH}"
+  /bin/bash -c "/opt/renode/tests/test.sh /workspace/tensorflow/lite/micro/testing/zephyr-vexriscv/litex-vexriscv-tflite.robot 2>&1 > ${MICRO_LOG_FILENAME} && cp *.xml *html ${MICRO_LOG_PATH}"
 then
   echo "DOCKER FAILED TO RUN"
   exit_code=1

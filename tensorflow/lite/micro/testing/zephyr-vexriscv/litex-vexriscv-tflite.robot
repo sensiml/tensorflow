@@ -2,7 +2,7 @@
 Suite Setup                   Setup
 Suite Teardown                Teardown
 Test Setup                    Reset Emulation
-Resource                      /opt/renode/tests/renode-keywords.robot
+Resource                      /home/cknorow/packages/renode/tests/renode-keywords.robot
 
 
 *** Test Cases ***
@@ -19,11 +19,14 @@ Run TF Model
     Execute Command           machine LoadPlatformDescription @${SCRIPT_DIR}/litex-vexriscv-tflite.repl
 
     Execute Command           showAnalyzer uart Antmicro.Renode.Analyzers.LoggingUartAnalyzer
+    
 
     Execute Command           $bin = @${BIN}
     Execute Command           sysbus LoadELF $bin
 
     Create Terminal Tester    sysbus.uart  timeout=30
+
+    Execute Command           logFile @${SCRIPT_DIR}/../logs/zephyr-vexrisxv.log
 
     Start Emulation
 

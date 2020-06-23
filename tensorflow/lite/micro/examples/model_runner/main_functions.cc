@@ -60,5 +60,5 @@ void loop() {
     }
     model_invoke(test_data[index], MODEL_INPUTS, results, MODEL_OUTPUTS);
   }
-   DebugLog("ALL TESTS PASSED\n");
+   DebugLog("ALL_TESTS_PASSED\n");
 }
