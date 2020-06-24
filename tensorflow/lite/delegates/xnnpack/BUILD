@@ -21,12 +21,13 @@ cc_library(
     linkstatic = True,
     deps = [
         "//tensorflow/lite:kernel_api",
+        "//tensorflow/lite:minimal_logging",
         "//tensorflow/lite:util",
         "//tensorflow/lite/c:common",
         "//tensorflow/lite/schema:schema_fbs",
         "//tensorflow/lite/tools/optimize/sparsity:format_converter",
         "@FP16",
-        "@XNNPACK",
+        "@XNNPACK//:xnnpack_f32",
     ],
 )
 
@@ -47,6 +48,7 @@ cc_library(
     linkstatic = True,
     deps = [
         "//tensorflow/lite:kernel_api",
+        "//tensorflow/lite:minimal_logging",
         "//tensorflow/lite:util",
         "//tensorflow/lite/c:common",
         "//tensorflow/lite/schema:schema_fbs",
@@ -318,7 +320,6 @@ cc_test(
         "//tensorflow:emscripten": EMSCRIPTEN_LINKOPTS,
         "//conditions:default": [],
     }),
-    tags = ["nomsan"],  # b/145129478
     deps = [
         ":depthwise_conv_2d_tester",
         ":test_main",
