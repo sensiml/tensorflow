@@ -24,19 +24,36 @@
 # repository as it mounts `pwd` to the renode docker image (via docker run -v)
 # and paths in the docker run command assume the entire tensorflow repo is mounted.
 declare -r ROOT_DIR=`pwd`
-declare -r WORKSPACE=${ROOT_DIR}
+declare -r WORKSPACE=/workspace
 declare -r MICRO_LOG_PATH=${WORKSPACE}/tensorflow/lite/micro/testing/logs
-export SCRIPT_DIR=${WORKSPACE}/tensorflow/lite/micro/testing/zephyr-vexriscv/
+declare -r SCRIPT_DIR=${WORKSPACE}/tensorflow/lite/micro/testing/zephyr-vexriscv/
 declare -r HOST_MICRO_LOG_PATH=${ROOT_DIR}/tensorflow/lite/micro/testing/logs
 declare -r MICRO_LOG_FILENAME=${MICRO_LOG_PATH}/logs.txt
-declare -r SCRIPT=${SCRIPT_DIR}litex-vexriscv-tflite-model-tester.resc
-export EXPECTED="$2"
-export BIN=${WORKSPACE}/$1
-declare -r RENODE=${WORKSPACE}/../renode/
 mkdir -p ${HOST_MICRO_LOG_PATH}
 
-touch tensorflow/lite/micro/testing/logs/zephyr-vexrisxv.log
-echo ${ROOT_DIR}
+exit_code=0
 
+# running in `if` to avoid setting +e
+if ! docker run \
+  --log-driver=none -a stdout -a stderr \
+  -v ${ROOT_DIR}:${WORKSPACE} \
+  -e BIN=${WORKSPACE}/$1 \
+  -e SCRIPT_DIR=${WORKSPACE}/${SCRIPT_DIR} \
+  -e SCRIPT=${SCRIPT_DIR}litex-vexriscv-tflite-model-tester.resc \
+  -p 3333:3333 \
+  -e EXPECTED="$2" \
+  antmicro/renode \
+  /bin/bash -c "/opt/renode/tests/test.sh /workspace/tensorflow/lite/micro/testing/zephyr-vexriscv/litex-vexriscv-tflite.robot 2>&1 > ${MICRO_LOG_FILENAME} && cp *.xml *html ${MICRO_LOG_PATH}"
+then
+  echo "DOCKER FAILED TO RUN"
+  exit_code=1
+fi
 
-${RENODE}/test.sh ${WORKSPACE}/tensorflow/lite/micro/testing/zephyr-vexriscv/litex-vexriscv-tflite.robot 2>&1 > ${MICRO_LOG_FILENAME}
+if [ $exit_code -eq 0 ]
+then
+  echo "$1: PASS"
+else
+  echo "$1: FAIL - '$2' not found in logs."
+fi
+exit $exit_code
+                                     
