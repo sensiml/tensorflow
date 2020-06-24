@@ -2,7 +2,7 @@
 Suite Setup                   Setup
 Suite Teardown                Teardown
 Test Setup                    Reset Emulation
-Resource                      /home/cknorow/packages/renode/tests/renode-keywords.robot
+Resource                      /renode/tests/renode-keywords.robot
 
 
 *** Test Cases ***

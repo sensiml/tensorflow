@@ -4,3 +4,5 @@ ifeq ($(TARGET), zephyr_vexriscv)
   export ZEPHYR_BASE?=$(realpath $(MAKEFILE_DIR)/downloads/zephyr)
 endif
 
+
+TEST_SCRIPT := tensorflow/lite/micro/testing/test_zephyr_vexriscv_binary.sh
