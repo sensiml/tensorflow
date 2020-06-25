@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#include "tensorflow/lite/micro/examples/model_runner/micro_api.h"
+#include "tensorflow/lite/micro/micro_api.h"
 #include "tensorflow/lite/micro/examples/model_runner/output_handler.h"
 
 

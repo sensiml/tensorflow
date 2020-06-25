@@ -7,7 +7,6 @@ ifeq ($(TARGET), zephyr_vexriscv)
 tensorflow/lite/micro/examples/model_runner/zephyr_riscv/src/assert.cc \
 tensorflow/lite/micro/examples/model_runner/main.cc \
 tensorflow/lite/micro/examples/model_runner/main_functions.cc \
-tensorflow/lite/micro/examples/model_runner/micro_api.cc \
 tensorflow/lite/micro/examples/model_runner/memory_benchmark.cc \
 tensorflow/lite/micro/examples/model_runner/model.cc \
 tensorflow/lite/micro/examples/model_runner/output_handler.cc \

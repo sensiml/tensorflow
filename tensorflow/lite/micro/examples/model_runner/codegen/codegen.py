@@ -169,7 +169,7 @@ def gen_micro_mutable_ops_resolver_add(model, all_ops_path):
 def fill_micro_api_template_file(
     model=None,
     template_path="./micro_api.cc.tpl",
-    output="..//micro_api.cc",
+    output="../../../micro_api.cc",
     all_ops_path="../../../all_ops_resolver.cc",
 ):
 
