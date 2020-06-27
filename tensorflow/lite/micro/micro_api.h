@@ -24,12 +24,12 @@ extern "C" {
 
 // Initializes all data needed for the example. The name is important, and needs
 // to be setup() for Arduino compatibility.
-void model_setup(const void* model_data, unsigned char * tensor_arena, int kTensorArenaSize);
+void micro_model_setup(const void* model_data, unsigned char * tensor_arena, int kTensorArenaSize);
 
 // Runs one iteration of data gathering and inference. This should be called
 // repeatedly from the application code. The name needs to be loop() for Arduino
 // compatibility.
-void model_invoke(float* input_data, int num_inputs, float* results, int num_outputs);
+void micro_model_invoke(float* input_data, int num_inputs, float* results, int num_outputs);
 
 // Returns a pointer to the error reporter
 void * get_micro_api_error_reporter();

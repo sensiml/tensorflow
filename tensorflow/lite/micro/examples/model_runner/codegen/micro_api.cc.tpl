@@ -34,7 +34,7 @@ TfLiteTensor* model_output = nullptr;
 }  // namespace
 
 // The name of this function is important for Arduino compatibility.
-void model_setup(const void* model_data, uint8_t* tensor_arena, int kTensorArenaSize) {
+void micro_model_setup(const void* model_data, uint8_t* tensor_arena, int kTensorArenaSize) {
   // Set up logging. Google style is to avoid globals or statics because of
   // lifetime uncertainty, but since this has a trivial destructor it's okay.
   static tflite::MicroErrorReporter micro_error_reporter;  // NOLINT
@@ -74,7 +74,7 @@ void model_setup(const void* model_data, uint8_t* tensor_arena, int kTensorArena
   
 }
 
-void model_invoke(float* input_data, int num_inputs, float* results, int num_outputs) {
+void micro_model_invoke(float* input_data, int num_inputs, float* results, int num_outputs) {
   // Attempt to read new data from the accelerometer.
 
 

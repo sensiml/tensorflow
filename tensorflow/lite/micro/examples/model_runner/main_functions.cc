@@ -51,7 +51,7 @@ void setup() {
     DebugLog("UNSUPPORTED VERSION.\n");
   }
   
-  model_setup(g_model, tensor_arena, arena_size);
+  micro_model_setup(g_model, tensor_arena, arena_size);
 }
 
 void loop() {
@@ -65,7 +65,7 @@ void loop() {
     {
         tf_results[i] = 0.0;
     }
-    model_invoke(test_data[index], MODEL_INPUTS, results, MODEL_OUTPUTS);
+    micro_model_invoke(test_data[index], MODEL_INPUTS, results, MODEL_OUTPUTS);
 
     max_value = results[0];
     result_index=0;
