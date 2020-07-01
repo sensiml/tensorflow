@@ -3,7 +3,7 @@ ifeq ($(TARGET),$(filter $(TARGET),\
   quicklogic-eos-s3\
   quickfeather\
   ))
-  export PATH := $(MAKEFILE_DIR)/downloads/gcc_embedded/bin/:$(PATH)
+  export PATH := ${TENSORFLOW_ROOT}$(MAKEFILE_DIR)/downloads/gcc_embedded/bin/:$(PATH)
   TARGET_ARCH := cortex-m4
   TARGET_TOOLCHAIN_PREFIX := arm-none-eabi-
   TARGET_TOOLCHAIN_ROOT := $(TENSORFLOW_ROOT)$(MAKEFILE_DIR)/downloads/gcc_embedded/bin/
@@ -47,7 +47,7 @@ ifeq ($(TARGET),$(filter $(TARGET),\
   CCFLAGS += $(PLATFORM_FLAGS)
   LDFLAGS += \
     --specs=nosys.specs \
-    -T ${TENSORFLOW_ROOT}$(MAKEFILE_DIR)/targets/quicklogic-eos-s3/quicklogic-eos-s3.lds \
+    -T ${TENSORFLOW_ROOT}$(MAKEFILE_DIR)/targets/quicklogic-eos-s3/quicklogic-eos-s3.ld \
     -Wl,-Map=${TENSORFLOW_ROOT}$(MAKEFILE_DIR)/gen/$(TARGET).map,--cref \
     -Wl,--gc-sections
   BUILD_TYPE := micro
