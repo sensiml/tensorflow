@@ -29,34 +29,28 @@ namespace {
 constexpr int kTensorArenaSize_max = 60 * 1024;
 constexpr int kTensorArenaSize_min = 2 * 1024;
 constexpr int kTensorArenaSize_tolerance = 1024;
-unsigned char tensor_arena[kTensorArenaSize_max];
-float tf_results[MODEL_OUTPUTS];
 }  // namespace
 
 // The name of this function is important for Arduino compatibility.
 void setup() {
   
-  int arena_size = kTensorArenaSize_max;
-  int* arena_size_p = &arena_size;
   int ret;
 
-  ret = find_arena_size(g_model, tensor_arena, arena_size_p,
-                        kTensorArenaSize_min, kTensorArenaSize_max,
-                        kTensorArenaSize_tolerance);
+  ret = micro_model_setup(g_model);
 
   if (ret == 1) {
-   DebugLog("ALLOCATION FAILED.\n");
-  }
-  else if (ret == 2) {
     DebugLog("UNSUPPORTED VERSION.\n");
   }
+  else if (ret == 2) {
+    DebugLog("ALLOCATION FAILED.\n");
+  }
   
-  micro_model_setup(g_model, tensor_arena, arena_size);
 }
 
 void loop() {
   int result_index=0;
   float max_value = 0.0f;
+  int ret;
 
   tflite::ErrorReporter* error_reporter = (tflite::ErrorReporter *)get_micro_api_error_reporter();
   
@@ -65,7 +59,13 @@ void loop() {
     {
         tf_results[i] = 0.0;
     }
-    micro_model_invoke(test_data[index], MODEL_INPUTS, results, MODEL_OUTPUTS);
+    ret = micro_model_invoke(test_data[index], MODEL_INPUTS, results, MODEL_OUTPUTS);
+
+    if (ret == 1)
+    {
+         DebugLog("MODEL INVOKE FAILED\n");
+         return;
+    }
 
     max_value = results[0];
     result_index=0;

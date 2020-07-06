@@ -31,10 +31,15 @@ const tflite::Model* model = nullptr;
 tflite::MicroInterpreter* interpreter = nullptr;
 TfLiteTensor* model_input = nullptr;
 TfLiteTensor* model_output = nullptr;
+
+// An area of memory to use for input, output, and intermediate arrays.
+constexpr int kTensorArenaSize = 48 * 1024;
+//FILL_TENSOR_ARENA_SIZE
+static uint8_t tensor_arena[kTensorArenaSize_max];
 }  // namespace
 
 // The name of this function is important for Arduino compatibility.
-void micro_model_setup(const void* model_data, uint8_t* tensor_arena, int kTensorArenaSize) {
+int micro_model_setup(const void* model_data) {
   // Set up logging. Google style is to avoid globals or statics because of
   // lifetime uncertainty, but since this has a trivial destructor it's okay.
   static tflite::MicroErrorReporter micro_error_reporter;  // NOLINT
@@ -48,7 +53,7 @@ void micro_model_setup(const void* model_data, uint8_t* tensor_arena, int kTenso
                          "Model provided is schema version %d not equal "
                          "to supported version %d.",
                          model->version(), TFLITE_SCHEMA_VERSION);
-    return;
+    return 1;
   }
 
 //FILL_MICRO_MUTABLE_OPS_RESOLVER
@@ -62,21 +67,21 @@ void micro_model_setup(const void* model_data, uint8_t* tensor_arena, int kTenso
 
   if (allocate_status != kTfLiteOk) {
     TF_LITE_REPORT_ERROR(error_reporter, "Allocate failed for tensor size %d", kTensorArenaSize);
-    return;
+    return 2;
   }
+
+  TF_LITE_REPORT_ERROR(error_reporter, "FOUND TENSOR SIZE: %d", interpreter.arena_used_bytes());
 
   // Obtain pointer to the model's input tensor.
   model_input = interpreter->input(0);
   model_output = interpreter->output(0);
   
-  return;
+  return 0;
 
   
 }
 
-void micro_model_invoke(float* input_data, int num_inputs, float* results, int num_outputs) {
-  // Attempt to read new data from the accelerometer.
-
+int micro_model_invoke(float* input_data, int num_inputs, float* results, int num_outputs) {
 
   for (int i =0; i< num_inputs; i++)
   {
@@ -88,7 +93,7 @@ void micro_model_invoke(float* input_data, int num_inputs, float* results, int n
 
   if (invoke_status != kTfLiteOk) {
     TF_LITE_REPORT_ERROR(error_reporter, "Invoke failed on index");
-    return;
+    return 1;
   }
   
   // Read the predicted y value from the model's output tensor
@@ -96,6 +101,8 @@ void micro_model_invoke(float* input_data, int num_inputs, float* results, int n
   {
       results[i] = model_output->data.f[i];     
   }
+
+  return 0;
 
 }
 

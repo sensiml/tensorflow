@@ -205,43 +205,6 @@ def fill_micro_api_template_file(
 
 
 
-def fill_memory_benchmark_template_file(
-    model=None,
-    template_path="./memory_benchmark.cc.tpl",
-    output="..//memory_benchmark.cc",
-    all_ops_path="../../../all_ops_resolver.cc",
-):
-
-    default_template = {
-        "micro_mutable_ops_resolver": [
-            "// All functions are included in the library",
-            " static tflite::ops::micro::AllOpsResolver resolver;",
-        ],
-        "micro_mutable_ops_resolver_header": [
-            '#include "tensorflow/lite/micro/kernels/all_ops_resolver.h"'
-        ],
-    }
-
-    if model:
-        default_template[
-            "micro_mutable_ops_resolver"
-        ] = gen_micro_mutable_ops_resolver_add(model, all_ops_path)
-        default_template["micro_mutable_ops_resolver_header"] = [
-            '#include "tensorflow/lite/micro/micro_mutable_op_resolver.h"'
-        ]
-
-    with open(template_path, "r") as fid:
-        output_str = "".join(fid.readlines())
-        for key, value in default_template.items():
-            output_str = re.sub(
-                r"//FILL_{}\b".format(key.upper()), "\n".join(value), output_str,
-            )
-
-    with open(output, "w") as out:
-        out.write(output_str)
-
-    return default_template
-
 def to_c_hex(tflite_model):
     hex_str = binascii.hexlify(tflite_model).decode()
     return (
@@ -335,9 +298,6 @@ if __name__ == "__main__":
 
         fill_micro_api_template_file(model)
         print('generated model_api.c')
-
-        fill_memory_benchmark_template_file(model)
-        print('generated memory benchmark')
 
         fill_model_template_file(model)
         print('generated model.cc')
