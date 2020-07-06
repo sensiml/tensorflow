@@ -7,7 +7,6 @@ ifeq ($(TARGET), zephyr_vexriscv)
 tensorflow/lite/micro/examples/model_runner/zephyr_riscv/src/assert.cc \
 tensorflow/lite/micro/examples/model_runner/main.cc \
 tensorflow/lite/micro/examples/model_runner/main_functions.cc \
-tensorflow/lite/micro/examples/model_runner/memory_benchmark.cc \
 tensorflow/lite/micro/examples/model_runner/model.cc \
 tensorflow/lite/micro/examples/model_runner/output_handler.cc \
 boards/litex_vexriscv.overlay \
@@ -18,7 +17,7 @@ $(eval $(call generate_project,cmake,zephyr_cmake_project.cmake,model_runner,$(M
 $(PRJDIR)model_runner/cmake/CMakeLists.txt: $(PRJDIR)model_runner/cmake/zephyr_cmake_project.cmake
 	@sed -E 's#\%\{INCLUDE_DIRS\}\%#$(PROJECT_INCLUDES)#g' $< > $@
 
-#We are skipping here copy of `zephyr` third_party repository 
+#We are skipping here copy of `zephyr` third_party repository
 #To compile standalone project ZEPHYR_BASE enviroment variable should be set
 model_runner_bin: generate_model_runner_cmake_project $(PRJDIR)model_runner/cmake/CMakeLists.txt
 	( \
@@ -28,7 +27,7 @@ model_runner_bin: generate_model_runner_cmake_project $(PRJDIR)model_runner/cmak
 	)
 
 
-#We are skipping here copy of `zephyr` third_party repository 
+#We are skipping here copy of `zephyr` third_party repository
 #To compile standalone project ZEPHYR_BASE enviroment variable should be set
 test_model_runner: model_runner_bin
 	( \

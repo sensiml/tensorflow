@@ -13,13 +13,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#include "tensorflow/lite/micro/micro_api.h"
-#include "tensorflow/lite/micro/examples/model_runner/model.h"
-#include "tensorflow/lite/micro/examples/model_runner/test_data.h"
-#include "tensorflow/lite/micro/examples/model_runner/memory_benchmark.h"
-#include "tensorflow/lite/micro/examples/model_runner/output_handler.h"
-#include "tensorflow/lite/micro/micro_error_reporter.h"
 #include "tensorflow/lite/micro/debug_log.h"
+#include "tensorflow/lite/micro/examples/model_runner/model.h"
+#include "tensorflow/lite/micro/examples/model_runner/output_handler.h"
+#include "tensorflow/lite/micro/examples/model_runner/test_data.h"
+#include "tensorflow/lite/micro/micro_api.h"
+#include "tensorflow/lite/micro/micro_error_reporter.h"
 
 // Globals, used for compatibility with Arduino-style sketches.
 namespace {
@@ -33,46 +32,41 @@ constexpr int kTensorArenaSize_tolerance = 1024;
 
 // The name of this function is important for Arduino compatibility.
 void setup() {
-  
   int ret;
 
   ret = micro_model_setup(g_model);
 
   if (ret == 1) {
     DebugLog("UNSUPPORTED VERSION.\n");
-  }
-  else if (ret == 2) {
+  } else if (ret == 2) {
     DebugLog("ALLOCATION FAILED.\n");
   }
-  
 }
 
 void loop() {
-  int result_index=0;
+  int result_index = 0;
   float max_value = 0.0f;
   int ret;
 
-  tflite::ErrorReporter* error_reporter = (tflite::ErrorReporter *)get_micro_api_error_reporter();
-  
-  for (int index = 0; index < TEST_DATA_LENGTH; index++) {
-    for (int i = 0; i < MODEL_OUTPUTS; i++) 
-    {
-        tf_results[i] = 0.0;
-    }
-    ret = micro_model_invoke(test_data[index], MODEL_INPUTS, results, MODEL_OUTPUTS);
+  tflite::ErrorReporter* error_reporter =
+      (tflite::ErrorReporter*)get_micro_api_error_reporter();
 
-    if (ret == 1)
-    {
-         DebugLog("MODEL INVOKE FAILED\n");
-         return;
+  for (int index = 0; index < TEST_DATA_LENGTH; index++) {
+    for (int i = 0; i < MODEL_OUTPUTS; i++) {
+      tf_results[i] = 0.0;
+    }
+    ret = micro_model_invoke(test_data[index], MODEL_INPUTS, results,
+                             MODEL_OUTPUTS);
+
+    if (ret == 1) {
+      DebugLog("MODEL INVOKE FAILED\n");
+      return;
     }
 
     max_value = results[0];
-    result_index=0;
-    for (int i = 1; i < MODEL_OUTPUTS; i++) 
-    {
-      if (results[i] > max_value)
-      {
+    result_index = 0;
+    for (int i = 1; i < MODEL_OUTPUTS; i++) {
+      if (results[i] > max_value) {
         max_value = results[i];
         result_index = i;
       }
@@ -80,5 +74,5 @@ void loop() {
     // Produce an output
     HandleOutput(error_reporter, result_index);
   }
-   DebugLog("ALL_TESTS_PASSED\n");
+  DebugLog("ALL_TESTS_PASSED\n");
 }
