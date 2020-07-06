@@ -25,9 +25,6 @@ namespace {
 // Create an area of memory to use for input, output, and intermediate arrays.\
 // The size of this will depend on the model you're using, and may need to be
 // determined by experimentation.
-constexpr int kTensorArenaSize_max = 60 * 1024;
-constexpr int kTensorArenaSize_min = 2 * 1024;
-constexpr int kTensorArenaSize_tolerance = 1024;
 }  // namespace
 
 // The name of this function is important for Arduino compatibility.

@@ -35,7 +35,7 @@ TfLiteTensor* model_output = nullptr;
 // An area of memory to use for input, output, and intermediate arrays.
 constexpr int kTensorArenaSize = 48 * 1024;
 //FILL_TENSOR_ARENA_SIZE
-static uint8_t tensor_arena[kTensorArenaSize_max];
+static uint8_t tensor_arena[kTensorArenaSize];
 }  // namespace
 
 // The name of this function is important for Arduino compatibility.
@@ -75,10 +75,10 @@ int micro_model_setup(const void* model_data) {
   // Obtain pointer to the model's input tensor.
   model_input = interpreter->input(0);
   model_output = interpreter->output(0);
-  
+
   return 0;
 
-  
+
 }
 
 int micro_model_invoke(float* input_data, int num_inputs, float* results, int num_outputs) {
@@ -87,7 +87,7 @@ int micro_model_invoke(float* input_data, int num_inputs, float* results, int nu
   {
     model_input->data.f[i] = input_data[i];
   }
-  
+
   // Run inference, and report any error.
   TfLiteStatus invoke_status = interpreter->Invoke();
 
@@ -95,11 +95,11 @@ int micro_model_invoke(float* input_data, int num_inputs, float* results, int nu
     TF_LITE_REPORT_ERROR(error_reporter, "Invoke failed on index");
     return 1;
   }
-  
+
   // Read the predicted y value from the model's output tensor
   for (int i=1; i< num_outputs; i++ )
   {
-      results[i] = model_output->data.f[i];     
+      results[i] = model_output->data.f[i];
   }
 
   return 0;
