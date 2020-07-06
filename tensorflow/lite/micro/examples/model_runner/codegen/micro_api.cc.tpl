@@ -35,7 +35,7 @@ TfLiteTensor* model_output = nullptr;
 // An area of memory to use for input, output, and intermediate arrays.
 constexpr int kTensorArenaSize = 48 * 1024;
 //FILL_TENSOR_ARENA_SIZE
-static uint8_t tensor_arena[kTensorArenaSize];
+uint8_t tensor_arena[kTensorArenaSize]  __attribute__ ((aligned (16)));
 }  // namespace
 
 // The name of this function is important for Arduino compatibility.
