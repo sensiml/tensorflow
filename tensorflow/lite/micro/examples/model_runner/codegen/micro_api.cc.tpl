@@ -70,7 +70,7 @@ int micro_model_setup(const void* model_data) {
     return 2;
   }
 
-  TF_LITE_REPORT_ERROR(error_reporter, "FOUND TENSOR SIZE: %d", interpreter.arena_used_bytes());
+  TF_LITE_REPORT_ERROR(error_reporter, "FOUND TENSOR SIZE: %d", interpreter->arena_used_bytes());
 
   // Obtain pointer to the model's input tensor.
   model_input = interpreter->input(0);
