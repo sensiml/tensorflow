@@ -55,12 +55,15 @@ int micro_model_setup(const void* model_data) {
                          model->version(), TFLITE_SCHEMA_VERSION);
     return 1;
   }
+  TF_LITE_REPORT_ERROR(error_reporter, "Create Interpretor");
 
 //FILL_MICRO_MUTABLE_OPS_RESOLVER
 
   static tflite::MicroInterpreter static_interpreter(
       model, resolver, tensor_arena, kTensorArenaSize, error_reporter);
   interpreter = &static_interpreter;
+  
+  TF_LITE_REPORT_ERROR(error_reporter, "Allocate Tensor Arena");
 
   // Allocate memory from the tensor_arena for the model's tensors.
   TfLiteStatus allocate_status = interpreter->AllocateTensors();
