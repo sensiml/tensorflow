@@ -27,15 +27,15 @@ ifeq ($(TARGET), cortexm4)
     -fmessage-length=0 \
     -fno-exceptions \
     -fno-unwind-tables \
-    -fno-builtin \
     -ffunction-sections \
     -fdata-sections \
     -funsigned-char \
     -MMD \
     -mcpu=cortex-m4 \
-    -mfpu=fpv4-sp-d16 \
-    -mfloat-abi=hard \
     -mthumb \
+    -mlittle-endian\
+    -mfloat-abi=hard\
+    -mfpu=fpv4-sp-d16\
     -std=gnu++11 \
     -Wvla \
     -Wall \
@@ -44,10 +44,11 @@ ifeq ($(TARGET), cortexm4)
     -Wno-missing-field-initializers \
     -Wno-write-strings \
     -Wno-sign-compare \
+    -Wunused-function \
     -fno-delete-null-pointer-checks \
     -fomit-frame-pointer \
     -fpermissive \
-    -nostdlib \
+    -fno-use-cxa-atexit \
     -g \
     -Os
   CXXFLAGS += $(PLATFORM_FLAGS)
