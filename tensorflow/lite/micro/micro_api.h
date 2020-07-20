@@ -16,7 +16,6 @@ limitations under the License.
 #ifndef TENSORFLOW_LITE_MICRO_EXAMPLES_MODEL_RUNNER_MICRO_API_H_
 #define TENSORFLOW_LITE_MICRO_EXAMPLES_MODEL_RUNNER_MICRO_API_H_
 
-
 // Expose a C friendly interface for main functions.
 #ifdef __cplusplus
 extern "C" {
@@ -24,15 +23,17 @@ extern "C" {
 
 // Initializes all data needed for the example. The name is important, and needs
 // to be setup() for Arduino compatibility.
-int micro_model_setup(const void* model_data);
+int micro_model_setup(const void* model_data, int kTensorArenaSize,
+                      unsigned char tensor_arena);
 
 // Runs one iteration of data gathering and inference. This should be called
 // repeatedly from the application code. The name needs to be loop() for Arduino
 // compatibility.
-int micro_model_invoke(float* input_data, int num_inputs, float* results, int num_outputs);
+int micro_model_invoke(float* input_data, int num_inputs, float* results,
+                       int num_outputs);
 
 // Returns a pointer to the error reporter
-void * get_micro_api_error_reporter();
+void* get_micro_api_error_reporter();
 
 #ifdef __cplusplus
 }

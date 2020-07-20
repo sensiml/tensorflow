@@ -13,16 +13,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#include "tensorflow/lite/micro/micro_api.h"
 #include "tensorflow/lite/micro/examples/model_runner/output_handler.h"
-
-
 #include "tensorflow/lite/micro/kernels/micro_ops.h"
+#include "tensorflow/lite/micro/micro_api.h"
 #include "tensorflow/lite/micro/micro_error_reporter.h"
 #include "tensorflow/lite/micro/micro_interpreter.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 #include "tensorflow/lite/version.h"
-//FILL_MICRO_MUTABLE_OPS_RESOLVER_HEADER
+// FILL_MICRO_MUTABLE_OPS_RESOLVER_HEADER
 
 // Globals, used for compatibility with Arduino-style sketches.
 namespace {
@@ -31,15 +29,11 @@ const tflite::Model* model = nullptr;
 tflite::MicroInterpreter* interpreter = nullptr;
 TfLiteTensor* model_input = nullptr;
 TfLiteTensor* model_output = nullptr;
-
-// An area of memory to use for input, output, and intermediate arrays.
-constexpr int kTensorArenaSize = 48 * 1024;
-//FILL_TENSOR_ARENA_SIZE
-uint8_t tensor_arena[kTensorArenaSize]  __attribute__ ((aligned (16)));
 }  // namespace
 
 // The name of this function is important for Arduino compatibility.
-int micro_model_setup(const void* model_data) {
+int micro_model_setup(const void* model_data, int kTensorArenaSize,
+                      uint8_t tensor_arena) {
   // Set up logging. Google style is to avoid globals or statics because of
   // lifetime uncertainty, but since this has a trivial destructor it's okay.
   static tflite::MicroErrorReporter micro_error_reporter;  // NOLINT
@@ -57,37 +51,36 @@ int micro_model_setup(const void* model_data) {
   }
   TF_LITE_REPORT_ERROR(error_reporter, "Create Interpretor");
 
-//FILL_MICRO_MUTABLE_OPS_RESOLVER
+  // FILL_MICRO_MUTABLE_OPS_RESOLVER
 
   static tflite::MicroInterpreter static_interpreter(
       model, resolver, tensor_arena, kTensorArenaSize, error_reporter);
   interpreter = &static_interpreter;
-  
+
   TF_LITE_REPORT_ERROR(error_reporter, "Allocate Tensor Arena");
 
   // Allocate memory from the tensor_arena for the model's tensors.
   TfLiteStatus allocate_status = interpreter->AllocateTensors();
 
   if (allocate_status != kTfLiteOk) {
-    TF_LITE_REPORT_ERROR(error_reporter, "Allocate failed for tensor size %d", kTensorArenaSize);
+    TF_LITE_REPORT_ERROR(error_reporter, "Allocate failed for tensor size %d",
+                         kTensorArenaSize);
     return 2;
   }
 
-  TF_LITE_REPORT_ERROR(error_reporter, "FOUND TENSOR SIZE: %d", interpreter->arena_used_bytes());
+  TF_LITE_REPORT_ERROR(error_reporter, "FOUND TENSOR SIZE: %d",
+                       interpreter->arena_used_bytes());
 
   // Obtain pointer to the model's input tensor.
   model_input = interpreter->input(0);
   model_output = interpreter->output(0);
 
   return 0;
-
-
 }
 
-int micro_model_invoke(float* input_data, int num_inputs, float* results, int num_outputs) {
-
-  for (int i =0; i< num_inputs; i++)
-  {
+int micro_model_invoke(float* input_data, int num_inputs, float* results,
+                       int num_outputs) {
+  for (int i = 0; i < num_inputs; i++) {
     model_input->data.f[i] = input_data[i];
   }
 
@@ -100,19 +93,11 @@ int micro_model_invoke(float* input_data, int num_inputs, float* results, int nu
   }
 
   // Read the predicted y value from the model's output tensor
-  for (int i=1; i< num_outputs; i++ )
-  {
-      results[i] = model_output->data.f[i];
+  for (int i = 1; i < num_outputs; i++) {
+    results[i] = model_output->data.f[i];
   }
 
   return 0;
-
 }
 
-
-void * get_micro_api_error_reporter()
-{
-  return error_reporter;
-}
-
-
+void* get_micro_api_error_reporter() { return error_reporter; }
