@@ -299,10 +299,11 @@ if __name__ == "__main__":
         fill_micro_api_template_file(model)
         print('generated model_api.c')
 
+
         fill_model_template_file(model)
         print('generated model.cc')
 
-
-        fill_test_data(params['test_data'])
-        print('generated test_data.h')
+        if params.get('test_data', None):
+            fill_test_data(params['test_data'])
+            print('generated test_data.h')
 
