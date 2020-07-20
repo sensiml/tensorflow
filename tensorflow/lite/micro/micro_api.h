@@ -24,7 +24,7 @@ extern "C" {
 // Initializes all data needed for the example. The name is important, and needs
 // to be setup() for Arduino compatibility.
 int micro_model_setup(const void* model_data, int kTensorArenaSize,
-                      unsigned char tensor_arena);
+                      unsigned char* tensor_arena);
 
 // Runs one iteration of data gathering and inference. This should be called
 // repeatedly from the application code. The name needs to be loop() for Arduino
