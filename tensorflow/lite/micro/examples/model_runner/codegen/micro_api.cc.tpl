@@ -29,6 +29,7 @@ const tflite::Model* model = nullptr;
 tflite::MicroInterpreter* interpreter = nullptr;
 TfLiteTensor* model_input = nullptr;
 TfLiteTensor* model_output = nullptr;
+
 }  // namespace
 
 // The name of this function is important for Arduino compatibility.

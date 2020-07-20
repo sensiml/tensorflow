@@ -25,13 +25,18 @@ namespace {
 // Create an area of memory to use for input, output, and intermediate arrays.\
 // The size of this will depend on the model you're using, and may need to be
 // determined by experimentation.
+// An area of memory to use for input, output, and intermediate arrays.
+constexpr int kTensorArenaSize = 48 * 1024;
+// FILL_TENSOR_ARENA_SIZE
+uint8_t tensor_arena[kTensorArenaSize] __attribute__((aligned(16)));
+
 }  // namespace
 
 // The name of this function is important for Arduino compatibility.
 void setup() {
   int ret;
 
-  ret = micro_model_setup(g_model);
+  ret = micro_model_setup(g_model, kTensorArenaSize, tensor_arena);
 
   if (ret == 1) {
     DebugLog("UNSUPPORTED VERSION.\n");
