@@ -20,7 +20,7 @@ limitations under the License.
 #include "tensorflow/lite/micro/micro_interpreter.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 #include "tensorflow/lite/version.h"
-// FILL_MICRO_MUTABLE_OPS_RESOLVER_HEADER
+//FILL_MICRO_MUTABLE_OPS_RESOLVER_HEADER
 
 // Globals, used for compatibility with Arduino-style sketches.
 namespace {
@@ -52,7 +52,7 @@ int micro_model_setup(const void* model_data, int kTensorArenaSize,
   }
   TF_LITE_REPORT_ERROR(error_reporter, "Create Interpretor");
 
-  // FILL_MICRO_MUTABLE_OPS_RESOLVER
+  //FILL_MICRO_MUTABLE_OPS_RESOLVER
 
   static tflite::MicroInterpreter static_interpreter(
       model, resolver, tensor_arena, kTensorArenaSize, error_reporter);
