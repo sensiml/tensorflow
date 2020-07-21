@@ -20,7 +20,7 @@ limitations under the License.
 #include "tensorflow/lite/micro/micro_interpreter.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 #include "tensorflow/lite/version.h"
-//FILL_MICRO_MUTABLE_OPS_RESOLVER_HEADER
+// FILL_MICRO_MUTABLE_OPS_RESOLVER_HEADER
 
 // Globals, used for compatibility with Arduino-style sketches.
 namespace {
@@ -34,7 +34,7 @@ TfLiteTensor* model_output = nullptr;
 
 // The name of this function is important for Arduino compatibility.
 int micro_model_setup(const void* model_data, int kTensorArenaSize,
-                      uint8_t tensor_arena) {
+                      uint8_t* tensor_arena) {
   // Set up logging. Google style is to avoid globals or statics because of
   // lifetime uncertainty, but since this has a trivial destructor it's okay.
   static tflite::MicroErrorReporter micro_error_reporter;  // NOLINT
@@ -52,7 +52,7 @@ int micro_model_setup(const void* model_data, int kTensorArenaSize,
   }
   TF_LITE_REPORT_ERROR(error_reporter, "Create Interpretor");
 
-  //FILL_MICRO_MUTABLE_OPS_RESOLVER
+  // FILL_MICRO_MUTABLE_OPS_RESOLVER
 
   static tflite::MicroInterpreter static_interpreter(
       model, resolver, tensor_arena, kTensorArenaSize, error_reporter);
