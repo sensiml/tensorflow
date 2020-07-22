@@ -4,6 +4,7 @@ import tensorflow as tf
 import binascii
 import json
 
+
 def parse_model_file(path, variable_name):
     """ this will parse the hex string form a model file model_data[] = {0x18, 0x00, ....} given
         the file path and the variable name
@@ -30,7 +31,6 @@ def parse_model_hex_string(hex_string):
     return "".join([x.lstrip().rstrip()[2:4] for x in hex_string.split(",")])
 
 
-
 def parse_all_ops(path):
 
     if not os.path.exists(path):
@@ -39,9 +39,9 @@ def parse_all_ops(path):
     function_list = []
     register_function = {}
     with open(path, "r") as fid:
-        M = ''.join(fid.readlines())
+        M = "".join(fid.readlines())
         M = M.split(";")
-        for line in M:          
+        for line in M:
             if "BuiltinOperator" in line:
                 s = line.lstrip()[27:].split(",")
                 function_list.extend([s[0]])
@@ -54,15 +54,24 @@ def gen_model_functions(function_list, all_ops_code):
 
     M = [
         "  // Only Pull in functions that are needed by the model",
-        "  static tflite::MicroMutableOpResolver<{}> resolver;".format(len(function_list)),
+        "  static tflite::MicroMutableOpResolver<{}> resolver;".format(
+            len(function_list)
+        ),
     ]
 
-    #template = "  resolver.AddBuiltin(tflite::BuiltinOperator_{0}, tflite::ops::micro::Register_{0}());"
+    # template = "  resolver.AddBuiltin(tflite::BuiltinOperator_{0}, tflite::ops::micro::Register_{0}());"
     template = "    resolver.{0}"
-    
-    for function in sorted(list(function_list)): # sort so always in same order
+
+    for function in sorted(list(function_list)):  # sort so always in same order
         print(all_ops_code[function])
-        M.append(template.format(all_ops_code[function].replace('BuiltinOperator','tflite::BuiltinOperator'))+';')
+        M.append(
+            template.format(
+                all_ops_code[function].replace(
+                    "BuiltinOperator", "tflite::BuiltinOperator"
+                )
+            )
+            + ";"
+        )
 
     return M
 
@@ -176,10 +185,10 @@ def fill_micro_api_template_file(
     default_template = {
         "micro_mutable_ops_resolver": [
             "// All functions are included in the library",
-            " static tflite::ops::micro::AllOpsResolver resolver;",
+            " static tflite::AllOpsResolver resolver;",
         ],
         "micro_mutable_ops_resolver_header": [
-            '#include "tensorflow/lite/micro/kernels/all_ops_resolver.h"'
+            '#include "tensorflow/lite/micro/all_ops_resolver.h"'
         ],
     }
 
@@ -204,7 +213,6 @@ def fill_micro_api_template_file(
     return default_template
 
 
-
 def to_c_hex(tflite_model):
     hex_str = binascii.hexlify(tflite_model).decode()
     return (
@@ -214,96 +222,98 @@ def to_c_hex(tflite_model):
         len(hex_str) // 2,
     )
 
-def fill_model_template_file(
-    model,
-    template_path="./model.cc.tpl",
-    output="../model.cc",
-    ):
 
+def fill_model_template_file(
+    model, template_path="./model.cc.tpl", output="../model.cc",
+):
 
     model_str, model_length = to_c_hex(binascii.unhexlify(model))
-    template = {'MODEL':"const unsigned char g_model[] DATA_ALIGN_ATTRIBUTE = {{{0}}};".format(model_str),
-                'MODEL_LENGTH':"const int g_model_len = {};".format(model_length)}
+    template = {
+        "MODEL": "const unsigned char g_model[] DATA_ALIGN_ATTRIBUTE = {{{0}}};".format(
+            model_str
+        ),
+        "MODEL_LENGTH": "const int g_model_len = {};".format(model_length),
+    }
 
     with open(template_path, "r") as fid:
         output_str = "".join(fid.readlines())
         for key, value in template.items():
-            output_str = re.sub(
-                r"//FILL_{}\b".format(key.upper()), value, output_str,
-            )
+            output_str = re.sub(r"//FILL_{}\b".format(key.upper()), value, output_str,)
 
     with open(output, "w") as out:
         out.write(output_str)
 
     return template
 
-    
 
 def fill_test_data(
-    test_data,
-    output='../test_data.h',
-    ):
+    test_data, output="../test_data.h",
+):
 
     num_inputs = len(test_data[0])
-    num_outputs= 5
+    num_outputs = 5
     outputs = []
     outputs.append("#define MODEL_INPUTS {}".format(num_inputs))
     outputs.append("#define MODEL_OUTPUTS {}".format(num_outputs))
     outputs.append("#define TEST_DATA_LENGTH {}".format(len(test_data)))
-    outputs.append("float results[MODEL_OUTPUTS] ={{ {} }};".format(', '.join(["0" for _ in range(num_outputs)])))
+    outputs.append(
+        "float results[MODEL_OUTPUTS] ={{ {} }};".format(
+            ", ".join(["0" for _ in range(num_outputs)])
+        )
+    )
 
     outputs.append("float test_data[TEST_DATA_LENGTH][MODEL_INPUTS] = {")
 
     for i in range(len(test_data)):
-        outputs.append('{{ {} }},'.format('.0f,'.join([str(x) for x in test_data[i]])))
+        outputs.append("{{ {} }},".format(".0f,".join([str(x) for x in test_data[i]])))
 
-    outputs.append('};')
+    outputs.append("};")
 
-    with open(output, 'w') as out:
-        out.write('\n'.join(outputs))
+    with open(output, "w") as out:
+        out.write("\n".join(outputs))
 
-    return '\n'.join(outputs)
+    return "\n".join(outputs)
+
 
 def fill_class_map(
-    class_map,
-    template_path='output_handerl.cc.tpl',
-    output='../output_handler.cc'
-    ):
+    class_map, template_path="output_handerl.cc.tpl", output="../output_handler.cc"
+):
 
     outputs = []
     outputs.append("switch (result){")
     for index, value in class_map:
-        outputs.append('case ({}):'.format(index))
-        outputs.append('\t'+'TF_LITE_REPORT_ERROR( error_reporter,"{}");'.format(value))
-    outputs.append('}')
+        outputs.append("case ({}):".format(index))
+        outputs.append(
+            "\t" + 'TF_LITE_REPORT_ERROR( error_reporter,"{}");'.format(value)
+        )
+    outputs.append("}")
+
 
 if __name__ == "__main__":
 
     import sys
 
-    print(sys.argv[1])
-
     if len(sys.argv) <= 1:
         fill_micro_api_template_file()
 
     else:
-        params = json.load(open(sys.argv[1],'r'))
+        print(sys.argv[1])
+        params = json.load(open(sys.argv[1], "r"))
 
-        if params.get('model_path', None):
-            model = parse_model_file(params['model_path'], "g_model")
-        elif params.get('model_binary', None):
-            model = params['model_binary']
+        if params.get("model_path", None):
+            model = parse_model_file(params["model_path"], "g_model")
+        elif params.get("model_binary", None):
+            model = params["model_binary"]
         else:
             raise Exception("must provide either model path or model binary")
 
         fill_micro_api_template_file(model)
-        print('generated model_api.c')
-
+        print("generated model_api.c")
 
         fill_model_template_file(model)
-        print('generated model.cc')
+        print("generated model.cc")
 
-        if params.get('test_data', None):
-            fill_test_data(params['test_data'])
-            print('generated test_data.h')
+        if params.get("test_data", None):
+            fill_test_data(params["test_data"])
+            print("generated test_data.h")
 
