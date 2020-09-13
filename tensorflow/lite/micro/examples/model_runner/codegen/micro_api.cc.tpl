@@ -98,7 +98,7 @@ int micro_model_invoke(float* input_data, int num_inputs, float* results,
   }
 
   // Read the predicted y value from the model's output tensor
-  for (int i = 1; i < num_outputs; i++) {
+  for (int i = 0; i < num_outputs; i++) {
     results[i] = model_output->data.f[i];
   }
 
