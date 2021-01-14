@@ -34,7 +34,6 @@ ifeq ($(TARGET), cortexm4)
     -mcpu=cortex-m4 \
     -mthumb \
     -mlittle-endian\
-    -mfloat-abi=hard\
     -mfpu=fpv4-sp-d16\
     -std=gnu++11 \
     -Wvla \
@@ -51,6 +50,12 @@ ifeq ($(TARGET), cortexm4)
     -fno-use-cxa-atexit \
     -g \
     -Os
+
+  ifndef $(PLATFORM_FLAGS_2)
+    PLATFORM_FLAGS_2=-mfloat-abi=hard
+  endif
+
+  PLATFORM_FLAGS += $(PLATFORM_FLAGS_2)
   CXXFLAGS += $(PLATFORM_FLAGS)
   CCFLAGS += $(PLATFORM_FLAGS)
   LDFLAGS += \
